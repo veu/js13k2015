@@ -1,0 +1,15 @@
+{
+  "name": "start",
+  "version": "0.0.0",
+  "authors": [
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "tests"
+  ],
+  "devDependencies": {
+    "jasmine-core": "~2.3.4"
+  }
+}
