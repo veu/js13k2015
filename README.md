@@ -4,7 +4,11 @@ Entry for js13kGames 2015
 
 ## Controls
 
-Currently it's in edit mode by default.
+Toggle modes with `E`.
+
+### Play mode
+
+* Click to move the unit
 
 ### Edit mode
 

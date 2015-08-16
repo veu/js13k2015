@@ -20,6 +20,9 @@ var Game = function (Events, Cube, Ramp, Fighter) {
 
     function render() {
         canvas.drawBackground();
+        if (mode === MODE_EDITOR) {
+            canvas.drawText('edit mode', 10, 20);
+        }
         canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 180);
         map.render(canvas);
         units.forEach(function (unit) {
@@ -33,6 +36,13 @@ var Game = function (Events, Cube, Ramp, Fighter) {
         window.requestAnimationFrame(render);
         setTimeout(loop, 1000 / fps);
     })();
+
+    document.onkeydown = function (event) {
+        var key = String.fromCharCode(event.keyCode);
+        if (key === 'E') {
+            mode = mode === MODE_PLAY ? MODE_EDITOR : MODE_PLAY;
+        }
+    };
 
     Events.on('canvas-clicked', function (data) {
         if (mode === MODE_PLAY) {

@@ -73,6 +73,10 @@ var canvas = function (Events) {
             }
             this.drawPolygon(color, points2d, data);
         },
+        drawText: function (text, x, y) {
+            ctx.fillStyle = '#ccc';
+            ctx.fillText(text, x, y);
+        },
         translate: function (x, y) {
             ctx.translate(x, y);
             inputCtx.translate(x, y);
