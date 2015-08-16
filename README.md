@@ -4,4 +4,10 @@ Entry for js13kGames 2015
 
 ## Controls
 
-Currently it's in edit mode by default. Place cubes by clicking and remove them by clicking while holding `shift`.
+Currently it's in edit mode by default.
+
+### Edit mode
+
+* Place blocks by clicking
+* Remove blocks by clicking while holding `shift`
+* Cycle through block types with middle click

@@ -16,7 +16,11 @@ var Map = function (Cube) {
                             blocks[z][y][x] = new Cube(x, y, z);
                         }
                         if (z == 1 && y < 3) {
-                            blocks[z][y][x] = new Cube(x, y, z);
+                            if (y === 2 && x === 8) {
+                                blocks[z][y][x] = new Ramp(x, y, z);
+                            } else {
+                                blocks[z][y][x] = new Cube(x, y, z);
+                            }
                         }
                     }
                 }
