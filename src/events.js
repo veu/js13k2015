@@ -1,4 +1,6 @@
 var Events = function () {
+    'use strict';
+
     var listeners = {};
 
     return {
@@ -16,7 +18,7 @@ var Events = function () {
                 return listener !== callback;
             });
         },
-        trigger: function (name, data) {
+        emit: function (name, data) {
             if (!listeners[name]) {
                 return;
             }

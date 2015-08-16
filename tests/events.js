@@ -12,7 +12,7 @@ describe('Events', function () {
 
         Events.on('x', mockListener.c1);
         Events.on('x', mockListener.c2);
-        Events.trigger('x');
+        Events.emit('x');
 
         expect(mockListener.c2).toHaveBeenCalled();
         expect(mockListener.c1).toHaveBeenCalled();
@@ -31,7 +31,7 @@ describe('Events', function () {
         Events.on('x', mockListener.c1);
         Events.on('x', mockListener.c2);
         Events.off('x', mockListener.c2);
-        Events.trigger('x');
+        Events.emit('x');
 
         expect(mockListener.c1).toHaveBeenCalled();
         done();
