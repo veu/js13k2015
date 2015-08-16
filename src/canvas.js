@@ -30,7 +30,7 @@ var canvas = function (Events) {
 
     canvas.onclick = function (event) {
         var imageData = inputCtx.getImageData(event.pageX, event.pageY, 1, 1).data;
-        if (+imageData[0] !== (imageData[1] + imageData[2]) & 255 || imageData[3] !== 255) {
+        if (imageData[0] !== ((imageData[1] + imageData[2]) & 255) || imageData[3] !== 255) {
             return;
         }
         var i = (imageData[1] << 8) | imageData[2];
