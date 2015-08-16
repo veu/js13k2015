@@ -1,4 +1,4 @@
-var canvas = function () {
+var canvas = function (Events) {
     'use strict';
 
     var width = 640;
@@ -14,6 +14,8 @@ var canvas = function () {
     var inputCtx = inputCanvas.getContext('2d');
 
     var translationStack = [];
+    var inputData = {};
+    var inputIndex = 0;
 
     function drawPolygon(ctx, color, points) {
         ctx.beginPath();
@@ -26,24 +28,50 @@ var canvas = function () {
         ctx.fill();
     }
 
+    canvas.onclick = function (event) {
+        var imageData = inputCtx.getImageData(event.pageX, event.pageY, 1, 1).data;
+        if (+imageData[0] !== (imageData[1] + imageData[2]) & 255 || imageData[3] !== 255) {
+            return;
+        }
+        var i = (imageData[1] << 8) | imageData[2];
+        if (!inputData[i]) {
+            return;
+        }
+
+        var data = {};
+        for (var d in inputData[i]) {
+            data[d] = inputData[i][d];
+        }
+        data.event = event;
+        Events.emit('canvas-clicked', data);
+    }
+
     return {
         drawBackground: function () {
             canvas.width = inputCanvas.width = width;
             canvas.height = inputCanvas.height = height;
             ctx.fillStyle = '#222';
             ctx.fillRect(0, 0, width, height);
+            inputData = {};
+            inputIndex = 0;
         },
-        drawPolygon: function (color, points) {
+        drawPolygon: function (color, points, data) {
             drawPolygon(ctx, color, points);
-            drawPolygon(inputCtx, color, points);
+
+            if (data) {
+                var i = inputIndex += 13;
+                inputData[i] = data;
+                color = 'rgb(' + [((i >> 8) + i) & 255, (i >> 8) & 255, i & 255] + ')';
+                drawPolygon(inputCtx, color, points);
+            }
         },
-        drawPolygon3d: function (color, points) {
+        drawPolygon3d: function (color, points, data) {
             var points2d = [];
             for (var i = 0; i < points.length; i += 3) {
                 points2d.push((points[i] - points[i + 1]) * 2 * blockSize);
                 points2d.push((points[i] + points[i + 1] + points[i + 2] * 2) * blockSize);
             }
-            this.drawPolygon(color, points2d);
+            this.drawPolygon(color, points2d, data);
         },
         translate: function (x, y) {
             ctx.translate(x, y);
@@ -67,4 +95,4 @@ var canvas = function () {
     }
 
 
-}();
+}(Events);

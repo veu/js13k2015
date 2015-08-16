@@ -13,10 +13,10 @@ var Map = function (Cube) {
                     for (var x = size.x; x--;) {
                         blocks[z][y][x] = null;
                         if (z == 0) {
-                            blocks[z][y][x] = new Cube();
+                            blocks[z][y][x] = new Cube(x, y, z);
                         }
                         if (z == 1 && y < 3) {
-                            blocks[z][y][x] = new Cube();
+                            blocks[z][y][x] = new Cube(x, y, z);
                         }
                     }
                 }
@@ -25,11 +25,20 @@ var Map = function (Cube) {
 
         this.get = function (x, y, z) {
             return blocks[z][y][x];
-        }
+        };
+
+        this.isValid = function (x, y, z) {
+            try {
+                blocks[z][y][x];
+                return true;
+            } catch (e) {
+                return false;
+            }
+        };
 
         this.set = function (x, y, z, block) {
             blocks[z][y][x] = block;
-        }
+        };
 
         this.render = function (canvas) {
             canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 180);
