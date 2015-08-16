@@ -1,31 +1,49 @@
-var Game = function (Events, Cube, Ramp) {
+var Game = function (Events, Cube, Ramp, Fighter) {
     var MODE_EDITOR = 0;
     var MODE_PLAY = 1;
-    var mode = MODE_EDITOR;
+    var mode = MODE_PLAY;
     var fps = 30;
 
     var map = new Map();
+    var units = [new Fighter(8, 8, 1)];
 
-    function addBlock(x, y, z) {
-            map.set(x, y, z, new Cube(x, y, z));
-    }
+    var tick = 0;
 
-    function removeBlock(x, y, z) {
-            map.set(x, y, z, null);
+    function update() {
+        if (tick % 15 === 0) {
+            units.forEach(function (unit) {
+                unit.move(map);
+            });
+        }
+        tick++;
     }
 
     function render() {
         canvas.drawBackground();
+        canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 180);
         map.render(canvas);
+        units.forEach(function (unit) {
+            unit.render(canvas, map);
+        });
+        canvas.pop();
     }
 
     (function loop() {
+        update();
         window.requestAnimationFrame(render);
-
         setTimeout(loop, 1000 / fps);
     })();
 
     Events.on('canvas-clicked', function (data) {
+        if (mode === MODE_PLAY) {
+            var target = {};
+            for (var i in data.block) {
+                target[i] = data.block[i];
+            }
+            target.z++;
+            units[0].target = target;
+        }
+
         if (mode === MODE_EDITOR) {
             var block = data.block;
             if (event.button === 1) {
@@ -45,8 +63,7 @@ var Game = function (Events, Cube, Ramp) {
                 if (map.isValid(x, y, z)) {
                     map.set(x, y, z, new Cube(x, y, z));
                 }
-
             }
         };
     });
-}(Events, Cube, Ramp);
+}(Events, Cube, Ramp, Fighter);
