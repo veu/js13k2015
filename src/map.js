@@ -32,12 +32,16 @@ var Map = function (Cube) {
         };
 
         this.isValid = function (x, y, z) {
-            try {
-                blocks[z][y][x];
-                return true;
-            } catch (e) {
+            if (z < 0 || z >= blocks.length) {
                 return false;
             }
+            if (y < 0 || y >= blocks[z].length) {
+                return false;
+            }
+            if (x < 0 || x >= blocks[z][y].length) {
+                return false;
+            }
+            return true;
         };
 
         this.set = function (x, y, z, block) {

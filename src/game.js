@@ -28,11 +28,7 @@ var Game = function (Events, Cube, Ramp) {
     Events.on('canvas-clicked', function (data) {
         if (mode === MODE_EDITOR) {
             var block = data.block;
-            if (!map.isValid(block.x, block.y, block.z)) {
-                return;
-            }
             if (event.button === 1) {
-                console.log(block);
                 if (block.type === 'cube') {
                     map.set(block.x, block.y, block.z, new Ramp(block.x, block.y, block.z, 'x'));
                 } else if (block.dir === 'x') {
@@ -43,10 +39,13 @@ var Game = function (Events, Cube, Ramp) {
             } else if (data.event.shiftKey) {
                 map.set(block.x, block.y, block.z, null);
             } else {
-                map.set(
-                    block.x + +(data.face === 'x'), block.y + +(data.face === 'y'), block.z + +(data.face === 'z'),
-                    new Cube(block.x, block.y, block.z)
-                );
+                var x = block.x + +(data.face === 'x');
+                var y = block.y + +(data.face === 'y');
+                var z = block.z + +(data.face === 'z');
+                if (map.isValid(x, y, z)) {
+                    map.set(x, y, z, new Cube(x, y, z));
+                }
+
             }
         };
     });
