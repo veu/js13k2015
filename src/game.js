@@ -21,7 +21,7 @@ var Game = function (Events, Cube, Ramp, Fighter) {
         if (mode === MODE_PLAY) {
             if (tick % 15 === 0) {
                 units.forEach(function (unit) {
-                    unit.move(map);
+                    unit.move(map, units);
                 });
             }
         }

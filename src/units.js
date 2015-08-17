@@ -5,12 +5,18 @@ var Fighter = function () {
         this.z = z;
         this.type = 'fighter';
 
-        this.move = function (map) {
+        this.move = function (map, units) {
             if (this.target) {
                 var directions = map.getDirectionsForTarget(this.target);
                 var newPos = directions[this.z][this.y][this.x];
                 if (!newPos) {
                     this.target = null;
+                    return;
+                }
+                var newPosIsTaken = units.some(function (unit) {
+                    return unit.x === newPos.x && unit.y === newPos.y && unit.z === newPos.z;
+                });
+                if (newPosIsTaken) {
                     return;
                 }
                 this.x = newPos.x;
