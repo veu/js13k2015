@@ -117,7 +117,9 @@ var Map = function (Cube) {
             if (Math.abs(origin.y - neighbor.y) + Math.abs(origin.x - neighbor.x) > 1) {
                 return false;
             }
-            if (neighbor.z === origin.z) {
+            if (neighbor.z === origin.z &&
+                blocks[neighbor.z - 1][neighbor.y][neighbor.x].type !== 'ramp' &&
+                blocks[origin.z - 1][origin.y][origin.x].type !== 'ramp') {
                 return true;
             }
             if (blocks[neighbor.z - 1][neighbor.y][neighbor.x].type === 'ramp') {
