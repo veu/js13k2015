@@ -4,6 +4,8 @@ var canvas = function (Events) {
     var width = 640;
     var height = 360;
 
+    var scale = 1;
+
     var blockSize = 8;
 
     var canvas = document.createElement('canvas');
@@ -29,7 +31,9 @@ var canvas = function (Events) {
     }
 
     canvas.onclick = function (event) {
-        var imageData = inputCtx.getImageData(event.pageX, event.pageY, 1, 1).data;
+        var x = event.pageX / scale | 0;
+        var y = event.pageY / scale | 0;
+        var imageData = inputCtx.getImageData(x, y, 1, 1).data;
         if (imageData[0] !== ((imageData[1] + imageData[2]) & 255) || imageData[3] !== 255) {
             return;
         }
@@ -45,6 +49,13 @@ var canvas = function (Events) {
         data.event = event;
         Events.emit('canvas-clicked', data);
     }
+
+    var resize = window.onresize = function () {
+        scale = Math.min(window.innerWidth / width, window.innerHeight / height);
+        canvas.style.width = (width * scale | 0) + 'px';
+        canvas.style.height = (height * scale | 0) + 'px';
+    };
+    resize();
 
     return {
         drawBackground: function () {
