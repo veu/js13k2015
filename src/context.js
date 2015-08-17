@@ -7,3 +7,12 @@ var MapContext = function () {
         this.face = face;
     }
 }();
+
+var UnitContext = function () {
+    'use strict';
+
+    return function (unit) {
+        this.type = 'unit';
+        this.unit = unit;
+    }
+}();

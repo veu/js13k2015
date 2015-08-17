@@ -12,6 +12,7 @@ Toggle modes with `E`.
 
 ### Edit mode
 
-* Place blocks by clicking
+* Place elements by clicking
+* Switch element type to place with the mouse wheel
 * Remove blocks by clicking while holding `shift`
-* Cycle through block types with middle click
+* Remove units by clicking

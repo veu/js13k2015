@@ -28,7 +28,7 @@ var Map = function (Cube) {
         })();
 
         this.get = function (x, y, z) {
-            return blocks[z][y][x];
+            return blocks[z] && blocks[z][y] && blocks[z][y][x];
         };
 
         this.isValid = function (x, y, z) {

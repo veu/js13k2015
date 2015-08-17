@@ -3,6 +3,7 @@ var Fighter = function () {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.type = 'fighter';
 
         this.move = function (map) {
             if (this.target) {
@@ -23,11 +24,12 @@ var Fighter = function () {
 
         this.render = function (canvas, map) {
             var z = this.z;
-            if (map.get(this.x, this.y, this.z - 1).type === 'ramp') {
+            var block = map.get(this.x, this.y, this.z - 1);
+            if (block && block.type === 'ramp') {
                 z -= 0.5;
             }
             canvas.translate3d(this.x, this.y, z);
-            canvas.drawPolygon('#aaa', [-6,5, 6,5, 6,25, -6,25]);
+            canvas.drawPolygon('#aaa', [-6,5, 6,5, 6,25, -6,25], new UnitContext(this));
             canvas.drawPolygon('#000', [-2,8, -2,11, -4,11, -4,8]);
             canvas.drawPolygon('#000', [2,8, 2,11, 4,11, 4,8]);
             canvas.pop();
