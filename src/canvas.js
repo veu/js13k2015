@@ -5,6 +5,8 @@ var canvas = function (Events) {
     var height = 360;
 
     var scale = 1;
+    var offsetX = 0;
+    var offsetY = 0;
 
     var blockSize = 8;
 
@@ -31,8 +33,8 @@ var canvas = function (Events) {
     }
 
     canvas.onclick = function (event) {
-        var x = event.pageX / scale | 0;
-        var y = event.pageY / scale | 0;
+        var x = (event.pageX - offsetX) / scale | 0;
+        var y = (event.pageY - offsetY) / scale | 0;
         var imageData = inputCtx.getImageData(x, y, 1, 1).data;
         if (imageData[0] !== ((imageData[1] + imageData[2]) & 255) || imageData[3] !== 255) {
             return;
@@ -52,8 +54,12 @@ var canvas = function (Events) {
 
     var resize = window.onresize = function () {
         scale = Math.min(window.innerWidth / width, window.innerHeight / height);
+        offsetX = (window.innerWidth - width * scale) / 2 | 0;
+        offsetY = (window.innerHeight - height * scale) / 2 | 0;
         canvas.style.width = (width * scale | 0) + 'px';
         canvas.style.height = (height * scale | 0) + 'px';
+        canvas.style.left = offsetX + 'px';
+        canvas.style.top = offsetY + 'px';
     };
     resize();
 
