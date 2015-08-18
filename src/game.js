@@ -11,7 +11,8 @@ var Game = function (Events, Cube, Ramp, Fighter) {
         new Cube(0, 0, 0),
         new Ramp(0, 0, 0, 'x'),
         new Ramp(0, 0, 0, 'y'),
-        new Fighter(0, 0, 0)
+        new Fighter(0, 0, 0),
+        new Climber(0, 0, 0)
     ];
     var selectedPlaceableIndex = 0;
 
@@ -64,6 +65,9 @@ var Game = function (Events, Cube, Ramp, Fighter) {
         }
         if (mode === MODE_PLAY) {
             units = unitPositions.map(function (unit) {
+                if (unit.type === 'climber') {
+                    return new Climber(unit.x, unit.y, unit.z);
+                }
                 return new Fighter(unit.x, unit.y, unit.z);
             });
         }
@@ -118,6 +122,8 @@ var Game = function (Events, Cube, Ramp, Fighter) {
                     map.set(x, y, z, new Ramp(x, y, z, element.dir));
                 } else if (element.type === 'fighter') {
                     unitPositions.push(new Fighter(x, y, z));
+                } else if (element.type === 'climber') {
+                    unitPositions.push(new Climber(x, y, z));
                 }
             }
         };

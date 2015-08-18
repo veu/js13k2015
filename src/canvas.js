@@ -67,7 +67,7 @@ var canvas = function (Events) {
         drawBackground: function () {
             canvas.width = inputCanvas.width = width;
             canvas.height = inputCanvas.height = height;
-            ctx.fillStyle = '#222';
+            ctx.fillStyle = '#3a0033';
             ctx.fillRect(0, 0, width, height);
             inputData = {};
             inputIndex = 0;
