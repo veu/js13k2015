@@ -62,14 +62,14 @@ var Game = function (Events, Cube, Ramp, Fighter) {
         var key = String.fromCharCode(event.keyCode);
         if (key === 'E') {
             mode = mode === MODE_PLAY ? MODE_EDITOR : MODE_PLAY;
-        }
-        if (mode === MODE_PLAY) {
-            units = unitPositions.map(function (unit) {
-                if (unit.type === 'climber') {
-                    return new Climber(unit.x, unit.y, unit.z);
-                }
-                return new Fighter(unit.x, unit.y, unit.z);
-            });
+            if (mode === MODE_PLAY) {
+                units = unitPositions.map(function (unit) {
+                    if (unit.type === 'climber') {
+                        return new Climber(unit.x, unit.y, unit.z);
+                    }
+                    return new Fighter(unit.x, unit.y, unit.z);
+                });
+            }
         }
     };
 
