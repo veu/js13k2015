@@ -53,7 +53,7 @@ var Climber = function () {
 
         this.move = function (map, units) {
             if (this.target) {
-                var directions = map.getDirectionsForTarget(this.target);
+                var directions = map.getDirectionsForTarget(this.target, true);
                 var newPos = directions[this.z][this.y][this.x];
                 if (!newPos) {
                     this.target = null;

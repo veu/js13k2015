@@ -31,7 +31,7 @@ var Map = function (Cube) {
             return blocks[z] && blocks[z][y] && blocks[z][y][x];
         };
 
-        this.isValid = function (x, y, z) {
+        var isValid = this.isValid = function (x, y, z) {
             if (z < 0 || z >= size.z || y < 0 || y >= size.y || x < 0 || x >= size.x) {
                 return false;
             }
@@ -56,7 +56,7 @@ var Map = function (Cube) {
             }
         };
 
-        this.getDirectionsForTarget = function (target) {
+        this.getDirectionsForTarget = function (target, climbing) {
             var distances = [],
                 directions = [];
             for (var z = size.z; z--;) {
@@ -76,7 +76,7 @@ var Map = function (Cube) {
             distances[target.z][target.y][target.x] = 0;
             while (todo.length > 0) {
                 var current = todo.pop();
-                this.getReachableNeighbors(current).forEach(function (neighbor) {
+                this.getReachableNeighbors(current, climbing).forEach(function (neighbor) {
                     var distance = current.distance + 1;
                     if (!blocks[neighbor.z][neighbor.y][neighbor.x] && distances[neighbor.z][neighbor.y][neighbor.x] > distance) {
                         distances[neighbor.z][neighbor.y][neighbor.x] = distance;
@@ -90,19 +90,17 @@ var Map = function (Cube) {
             return directions;
         };
 
-        this.getReachableNeighbors = function (origin) {
+        this.getReachableNeighbors = function (origin, climbing) {
             var neighbors = [];
             for (var z = -1; z < 2; z++) {
                 for (var y = -1; y < 2; y++) {
                     for (var x = -1; x < 2; x++) {
                         var neighbor = {x: origin.x + x, y: origin.y + y, z: origin.z + z};
                         if ((x !== 0 || y !== 0 || z !== 0) &&
-                            neighbor.x >= 0 && neighbor.x < size.x &&
-                            neighbor.y >= 0 && neighbor.y < size.y &&
-                            neighbor.z > 0 && neighbor.z < size.z &&
-                            isReachableNeighbor(origin, neighbor)) {
-                                neighbors.push(neighbor);
-
+                            (x === 0 || y === 0) &&
+                            this.isValid(neighbor.x, neighbor.y, neighbor.z) &&
+                            (isReachableNeighbor(origin, neighbor, climbing))) {
+                            neighbors.push(neighbor);
                         }
                     }
                 }
@@ -110,36 +108,73 @@ var Map = function (Cube) {
             return neighbors;
         };
 
-        function isReachableNeighbor(origin, neighbor) {
-            if (blocks[neighbor.z][neighbor.y][neighbor.x] || !blocks[neighbor.z - 1][neighbor.y][neighbor.x]) {
+        function isReachableNeighbor(a, b, climbing) {
+            if (blocks[b.z][b.y][b.x]) {
                 return false;
             }
-            if (Math.abs(origin.y - neighbor.y) + Math.abs(origin.x - neighbor.x) > 1) {
-                return false;
-            }
-            if (neighbor.z === origin.z &&
-                blocks[neighbor.z - 1][neighbor.y][neighbor.x].type !== 'ramp' &&
-                blocks[origin.z - 1][origin.y][origin.x].type !== 'ramp') {
-                return true;
-            }
-            if (blocks[neighbor.z - 1][neighbor.y][neighbor.x].type === 'ramp') {
-                if (blocks[neighbor.z - 1][neighbor.y][neighbor.x].dir === 'x' && origin.y === neighbor.y) {
-                    return true;
+
+            var aGround = blocks[a.z - 1][a.y][a.x];
+            var bGround = blocks[b.z - 1][b.y][b.x];
+            var dir = a.x !== b.x ? 'x' : a.y !== b.y ? 'y' : 'z';
+
+            // not climbing
+            if (aGround && bGround) {
+                // cube to ramp
+                if (aGround.type === 'cube' && bGround.type === 'ramp')  {
+                    return dir === bGround.dir;
                 }
-                if (blocks[neighbor.z - 1][neighbor.y][neighbor.x].dir === 'y' && origin.x === neighbor.x) {
-                    return true;
+                // ramp to cube
+                if (aGround.type === 'ramp' && bGround.type === 'cube')  {
+                    return dir === aGround.dir;
+                }
+                // ramp to ramp
+                if (aGround.type === 'ramp' && bGround.type === 'ramp')  {
+                    return dir === aGround.dir && dir === bGround.dir;
+                }
+                // cube to cube
+                return a.z === b.z;
+            }
+
+            // climbing
+            if (climbing) {
+                // strictly up / down
+                if (dir === 'z') {
+                    return isNextToClimbableAWall(a.x, a.y, Math.min(a.z, b.z));
+                }
+                // air to ramp
+                if (!aGround && bGround && bGround.type === 'ramp')  {
+                    return dir === bGround.dir;
+                }
+                // air to cube
+                if (!aGround && bGround && bGround.type === 'cube')  {
+                    return a.z === b.z;
+                }
+                // ramp to air
+                if (aGround && aGround.type === 'ramp' && !bGround)  {
+                    return dir === aGround.dir;
+                }
+                // cube to air
+                if (aGround && aGround.type === 'cube' && !bGround)  {
+                    return a.z === b.z;
                 }
             }
-            if (blocks[origin.z - 1][origin.y][origin.x].type === 'ramp') {
-                if (blocks[origin.z - 1][origin.y][origin.x].dir === 'x' && origin.y === neighbor.y) {
-                    return true;
-                }
-                if (blocks[origin.z - 1][origin.y][origin.x].dir === 'y' && origin.x === neighbor.x) {
-                    return true;
-                }
-            }
+
             return false;
         };
+
+        function isNextToClimbableAWall(x, y, z) {
+            var adjacent = [{x: 1, y: 0}, {x: -1, y: 0}, {x: 0, y: 1}, {x: 0, y: -1}];
+
+            return adjacent.some(function (dir) {
+                if (!isValid(x + dir.x, y + dir.y, z) || !isValid(x + dir.x, y + dir.y, z + 1)) {
+                    return false;
+                }
+
+                var lower = blocks[z][y + dir.y][x + dir.x];
+
+                return lower && lower.type === 'cube';
+            });
+        }
     }
 
 }(Cube);
