@@ -1,18 +1,12 @@
-var MapContext = function () {
-    'use strict';
+'use strict';
 
-    return function (block, face) {
-        this.type = 'map';
-        this.block = block;
-        this.face = face;
-    }
-}();
+exports.MapContext = function (block, face) {
+    this.type = 'map';
+    this.block = block;
+    this.face = face;
+};
 
-var UnitContext = function () {
-    'use strict';
-
-    return function (unit) {
-        this.type = 'unit';
-        this.unit = unit;
-    }
-}();
+exports.UnitContext = function (unit) {
+    this.type = 'unit';
+    this.unit = unit;
+};
