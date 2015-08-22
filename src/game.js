@@ -19,7 +19,8 @@ var placeableElements = [
     new blockTypes.Ramp(0, 0, 0, 'x'),
     new blockTypes.Ramp(0, 0, 0, 'y'),
     new unitTypes.Fighter(0, 0, 0),
-    new unitTypes.Climber(0, 0, 0)
+    new unitTypes.Climber(0, 0, 0),
+    new unitTypes.Shadow(0, 0, 0)
 ];
 var selectedPlaceableIndex = 0;
 
@@ -30,6 +31,9 @@ function update() {
         if (tick % 15 === 0) {
             units.forEach(function (unit) {
                 unit.move(map, units);
+            });
+            units = units.filter(function (unit) {
+                return unit.life > 0;
             });
         }
     }
@@ -74,7 +78,10 @@ document.onkeydown = function (event) {
                 if (unit.type === 'climber') {
                     return new unitTypes.Climber(unit.x, unit.y, unit.z);
                 }
-                return new unitTypes.Fighter(unit.x, unit.y, unit.z);
+                if (unit.type === 'fighter') {
+                    return new unitTypes.Fighter(unit.x, unit.y, unit.z);
+                }
+                return new unitTypes.Shadow(unit.x, unit.y, unit.z);
             });
         }
     }
@@ -131,6 +138,8 @@ events.on('canvas-clicked', function (context) {
                 unitPositions.push(new unitTypes.Fighter(x, y, z));
             } else if (element.type === 'climber') {
                 unitPositions.push(new unitTypes.Climber(x, y, z));
+            } else if (element.type === 'shadow') {
+                unitPositions.push(new unitTypes.Shadow(x, y, z));
             }
         }
     };
