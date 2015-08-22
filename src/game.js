@@ -51,15 +51,20 @@ function render() {
     }
     canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 180);
     map.render(canvas);
+
+    var orderedUnits = units.slice();
     if (mode === MODE_EDITOR) {
-        unitPositions.forEach(function (unit) {
-            unit.render(canvas, map);
-        });
+        orderedUnits = unitPositions.slice();
     } else {
-        units.forEach(function (unit) {
-            unit.render(canvas, map);
-        });
+        orderedUnits = units.slice();
     }
+    orderedUnits.sort(function (a, b) {
+        return (a.x - b.x) + (a.y - b.y);
+    });
+    orderedUnits.forEach(function (unit) {
+        unit.render(canvas, map);
+    });
+    
     canvas.pop();
 }
 
