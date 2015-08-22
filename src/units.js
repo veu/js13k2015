@@ -4,7 +4,7 @@ var UnitContext = require('./context.js').UnitContext;
 var config = require('./config.js').units;
 
 var Unit = {
-    attack: function (units) {
+    attack: function (map, units) {
         var adjacent = [{x: 1, y: 0}, {x: -1, y: 0}, {x: 0, y: 1}, {x: 0, y: -1}];
         var reachableUnits = units.filter(function (unit) {
             var diff = {
@@ -54,14 +54,16 @@ exports.Fighter = function (x, y, z) {
     this.attack = Unit.attack;
 
     this.move = function (map, units) {
-        if (this.attack(units)) {
+        if (this.attack(map, units)) {
             return;
         }
-        if (this.target) {
-            var directions = map.getDirectionsForTarget(this.target);
+        if (map.target) {
+            if (this.x === map.target.x && this.y === map.target.y && this.z === map.target.z) {
+                return;
+            }
+            var directions = map.getDirectionsForTarget(map.target);
             var newPos = directions[this.z][this.y][this.x];
             if (!newPos) {
-                this.target = null;
                 return;
             }
             var newPosIsTaken = units.some(function (unit) {
@@ -73,9 +75,6 @@ exports.Fighter = function (x, y, z) {
             this.x = newPos.x;
             this.y = newPos.y;
             this.z = newPos.z;
-            if (this.x === this.target.x && this.y === this.target.y && this.z === this.target.z) {
-                this.target = null;
-            }
         }
     };
 
@@ -105,14 +104,16 @@ exports.Climber = function (x, y, z) {
     this.attack = Unit.attack;
 
     this.move = function (map, units) {
-        if (this.attack(units)) {
+        if (this.attack(map, units)) {
             return;
         }
-        if (this.target) {
-            var directions = map.getDirectionsForTarget(this.target, true);
+        if (map.target) {
+            if (this.x === map.target.x && this.y === map.target.y && this.z === map.target.z) {
+                return;
+            }
+            var directions = map.getDirectionsForTarget(map.target, true);
             var newPos = directions[this.z][this.y][this.x];
             if (!newPos) {
-                this.target = null;
                 return;
             }
             var newPosIsTaken = units.some(function (unit) {
@@ -124,9 +125,6 @@ exports.Climber = function (x, y, z) {
             this.x = newPos.x;
             this.y = newPos.y;
             this.z = newPos.z;
-            if (this.x === this.target.x && this.y === this.target.y && this.z === this.target.z) {
-                this.target = null;
-            }
         }
     };
 
@@ -156,7 +154,7 @@ exports.Shadow = function (x, y, z) {
     this.attack = Unit.attack;
 
     this.move = function (map, units) {
-        this.attack(units);
+        this.attack(map, units);
     };
 
     this.render = function (canvas, map) {

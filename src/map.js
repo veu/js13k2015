@@ -6,6 +6,8 @@ exports.Map = function () {
     var blocks = [];
     var size = {x: 9, y: 9, z: 9};
 
+    this.target = null;
+
     (function init() {
         for (var z = size.z; z--;) {
             blocks[z] = [];
@@ -54,6 +56,12 @@ exports.Map = function () {
                     }
                 }
             }
+        }
+
+        if (this.target) {
+            canvas.translate3d(+this.target.x, +this.target.y, +this.target.z);
+            this.target.render(canvas);
+            canvas.pop();
         }
     };
 

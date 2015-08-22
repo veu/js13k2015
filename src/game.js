@@ -20,7 +20,8 @@ var placeableElements = [
     new blockTypes.Ramp(0, 0, 0, 'y'),
     new unitTypes.Fighter(0, 0, 0),
     new unitTypes.Climber(0, 0, 0),
-    new unitTypes.Shadow(0, 0, 0)
+    new unitTypes.Shadow(0, 0, 0),
+    new blockTypes.Target(0, 0, 0)
 ];
 var selectedPlaceableIndex = 0;
 
@@ -64,7 +65,7 @@ function render() {
     orderedUnits.forEach(function (unit) {
         unit.render(canvas, map);
     });
-    
+
     canvas.pop();
 }
 
@@ -145,6 +146,8 @@ events.on('canvas-clicked', function (context) {
                 unitPositions.push(new unitTypes.Climber(x, y, z));
             } else if (element.type === 'shadow') {
                 unitPositions.push(new unitTypes.Shadow(x, y, z));
+            } else if (element.type === 'target') {
+                map.target = new blockTypes.Target(x, y, z);
             }
         }
     };

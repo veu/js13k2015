@@ -15,6 +15,18 @@ exports.Cube = function (x, y, z) {
     }
 };
 
+exports.Target = function (x, y, z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.type = 'target';
+
+    this.render = function (canvas) {
+        canvas.drawPolygon3d('rgba(137,247,254,.5)', [.2,.2,0, .8,.2,1, .8,.8,1]);
+        canvas.drawPolygon3d('rgba(150,236,254,.5)', [.2,.2,0, .8,.8,1, .2,.8,1]);
+    }
+};
+
 exports.Ramp = function (x, y, z, dir) {
     this.x = x;
     this.y = y;
