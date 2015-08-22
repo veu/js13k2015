@@ -15,15 +15,8 @@ exports.Map = function () {
                 blocks[z][y] = [];
                 for (var x = size.x; x--;) {
                     blocks[z][y][x] = null;
-                    if (z == 0) {
+                    if (z == 0 || x + y + z < 7) {
                         blocks[z][y][x] = new blockTypes.Cube(x, y, z);
-                    }
-                    if (z == 1 && (y < 2 || y < 3 && x < 8)) {
-                        if (y === 2 && x === 7) {
-                            blocks[z][y][x] = new blockTypes.Ramp(x, y, z, 'y');
-                        } else {
-                            blocks[z][y][x] = new blockTypes.Cube(x, y, z);
-                        }
                     }
                 }
             }
