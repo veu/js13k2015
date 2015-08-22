@@ -11,6 +11,7 @@ gulp.task('default', ['build'], function() {
 gulp.task('build', function() {
     var js = gulp.src('src/*.js')
         .pipe(webpack({
+            devtool: 'inline-source-map',
             output: {
                 filename: 'bundle.js'
             }
