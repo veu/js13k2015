@@ -169,6 +169,9 @@ exports.Map = function (save) {
     };
 
     function isReachableNeighbor(a, b, climbing) {
+        if (a.z === 0 || b.z === 0) {
+            return false;
+        }
         if (blocks[b.z][b.y][b.x]) {
             return false;
         }
