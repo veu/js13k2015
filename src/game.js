@@ -26,6 +26,7 @@ var placeableElements = [
 var selectedPlaceableIndex = 0;
 
 var tick = 0;
+var score = 0;
 
 function update() {
     if (mode === MODE_PLAY) {
@@ -34,7 +35,14 @@ function update() {
                 unit.move(map, units);
             });
             units = units.filter(function (unit) {
-                return unit.life > 0;
+                if (unit.life <= 0) {
+                    return false;
+                }
+                if (map.target && unit.x === map.target.x && unit.y === map.target.y && unit.z === map.target.z) {
+                    score ++;
+                    return false;
+                }
+                return true;
             });
         }
     }
@@ -49,6 +57,8 @@ function render() {
         canvas.translate(35, 30);
         placeableElements[selectedPlaceableIndex].render(canvas, map);
         canvas.pop();
+    } else {
+        canvas.drawText('score: ' + score, 10, 20);
     }
     canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 180);
     map.render(canvas);
@@ -80,6 +90,7 @@ document.onkeydown = function (event) {
     if (key === 'E') {
         mode = mode === MODE_PLAY ? MODE_EDITOR : MODE_PLAY;
         if (mode === MODE_PLAY) {
+            score = 0;
             units = unitPositions.map(function (unit) {
                 if (unit.type === 'climber') {
                     return new unitTypes.Climber(unit.x, unit.y, unit.z);
