@@ -12,6 +12,7 @@ exports.Map = function (save) {
     var blocks = [];
     var size = {x: 9, y: 9, z: 9};
 
+    this.size = size;
     this.target = null;
 
     (function init() {
@@ -34,7 +35,7 @@ exports.Map = function (save) {
                         } else if (type === TYPE_TARGET) {
                             this.target = new blockTypes.Target(x, y, z);
                         }
-                    } else if (z == 0 || x + y + z < 7) {
+                    } else if (z == 0) {
                         blocks[z][y][x] = new blockTypes.Cube(x, y, z);
                     }
                 }
