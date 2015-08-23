@@ -11,6 +11,15 @@ var MODE_PLAY = 1;
 var mode = MODE_EDITOR;
 var fps = 30;
 
+var TYPE_CLIMBER = 0;
+var TYPE_FIGHTER = 1;
+var TYPE_SHADOW = 2;
+var unitTypeMap = {
+    climber: TYPE_CLIMBER,
+    fighter: TYPE_FIGHTER,
+    shadow: TYPE_SHADOW
+};
+
 var map = new Map();
 var unitPositions = [];
 var units = [];
@@ -44,6 +53,11 @@ function update() {
                 }
                 return true;
             });
+        }
+    } else if (mode === MODE_EDITOR) {
+        if (window.level) {
+            loadLevel(window.level);
+            window.level = null;
         }
     }
     tick++;
@@ -102,6 +116,39 @@ document.onkeydown = function (event) {
             });
         }
     }
+    if (key === 'S' && mode === MODE_EDITOR) {
+        var level = saveLevel();
+        console.log('level = "' + level + '"');
+    }
+};
+
+function saveLevel() {
+    var strUnits = unitPositions.map(function(unit) {
+        return '' + [unitTypeMap[unit.type], unit.x, unit.y, unit.z];
+    }, '');
+
+    var level = strUnits.join(';') + '.' + map.toString();
+
+    return level;
+};
+
+function loadLevel(level) {
+    level = level.split('.');
+    if (level[0]) {
+        var strUnits = level[0].split(';');
+        unitPositions = strUnits.map(function (strUnit) {
+            var attributes = strUnit.split(',');
+            if (+attributes[0] === TYPE_CLIMBER) {
+                return new unitTypes.Climber(+attributes[1], +attributes[2], +attributes[3]);
+            }
+            if (+attributes[0] === TYPE_FIGHTER) {
+                return new unitTypes.Fighter(+attributes[1], +attributes[2], +attributes[3]);
+            }
+            return new unitTypes.Shadow(+attributes[1], +attributes[2], +attributes[3]);
+        });
+    }
+
+    map = new Map(level[1]);
 };
 
 document.onmousewheel = function (event) {

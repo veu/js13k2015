@@ -2,26 +2,45 @@
 
 var blockTypes = require('./blocks.js');
 
-exports.Map = function () {
+var TYPE_EMPTY = 0;
+var TYPE_CUBE = 1;
+var TYPE_TARGET = 2;
+var TYPE_RAMPX = 3;
+var TYPE_RAMPY = 4;
+
+exports.Map = function (save) {
     var blocks = [];
     var size = {x: 9, y: 9, z: 9};
 
     this.target = null;
 
     (function init() {
+        save = save && atob(save);
         for (var z = size.z; z--;) {
             blocks[z] = [];
             for (var y = size.y; y--;) {
                 blocks[z][y] = [];
                 for (var x = size.x; x--;) {
                     blocks[z][y][x] = null;
-                    if (z == 0 || x + y + z < 7) {
+                    if (save) {
+                        var index = (z * size.y + y) * size.x + x;
+                        var type = (save.charCodeAt(index >> 2) >> ((index % 4) * 2)) & 3;
+                        if (type === TYPE_CUBE) {
+                            blocks[z][y][x] = new blockTypes.Cube(x, y, z);
+                        } else if (type === TYPE_RAMPX) {
+                            blocks[z][y][x] = new blockTypes.Ramp(x, y, z, 'x');
+                        } else if (type === TYPE_RAMPY) {
+                            blocks[z][y][x] = new blockTypes.Cube(x, y, z, 'y');
+                        } else if (type === TYPE_TARGET) {
+                            this.target = new blockTypes.Target(x, y, z);
+                        }
+                    } else if (z == 0 || x + y + z < 7) {
                         blocks[z][y][x] = new blockTypes.Cube(x, y, z);
                     }
                 }
             }
         }
-    })();
+    }).call(this);
 
     this.get = function (x, y, z) {
         return blocks[z] && blocks[z][y] && blocks[z][y][x];
@@ -108,6 +127,44 @@ exports.Map = function () {
             }
         }
         return neighbors;
+    };
+
+    this.toString = function() {
+        var blockTypes = [];
+        for (var z in blocks) {
+            for (var y in blocks[z]) {
+                for (var x in blocks[z][y]) {
+                    var type = TYPE_EMPTY;
+                    if (blocks[z][y][x]) {
+                        if (blocks[z][y][x].type === 'cube') {
+                            type = TYPE_CUBE;
+                        }
+                        if (blocks[z][y][x].type === 'ramp' && blocks[z][y][x].dir === 'x') {
+                            type = TYPE_RAMPX;
+                        }
+                        if (blocks[z][y][x].type === 'ramp' && blocks[z][y][x].dir === 'y') {
+                            type = TYPE_RAMPY;
+                        }
+                    }
+                    if (this.target && this.target.x === +x && this.target.y === +y && this.target.z === +z) {
+                        type = TYPE_TARGET;
+                    }
+                    blockTypes.push(type);
+                }
+            }
+        }
+
+        var compressedBlockTypes = '';
+        for (var i = 0; i < blockTypes.length; i += 4) {
+            var value =
+                (blockTypes[i] || 0) |
+                (blockTypes[i + 1] || 0) << 2 |
+                (blockTypes[i + 2] || 0) << 4 |
+                (blockTypes[i + 3] || 0) << 6;
+            compressedBlockTypes += String.fromCharCode(value);
+        }
+
+        return btoa(compressedBlockTypes);
     };
 
     function isReachableNeighbor(a, b, climbing) {

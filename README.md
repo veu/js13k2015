@@ -8,7 +8,7 @@ Toggle modes with `E`.
 
 ### Play mode
 
-* Click to move the unit
+* No interaction possible at this point
 
 ### Edit mode
 
@@ -16,3 +16,6 @@ Toggle modes with `E`.
 * Switch element type to place with the mouse wheel
 * Remove blocks by clicking while holding `shift`
 * Remove units by clicking
+* Move target by placing it somewhere else
+* Save level with `S` and copy last line from console
+* Load level by pasting the line back into console
