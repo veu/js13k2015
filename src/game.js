@@ -93,6 +93,19 @@ function render() {
     canvas.pop();
 }
 
+function reverseRoles() {
+    console.log('what?');
+    units = units.map(function (unit) {
+        if (unit.type === 'climber') {
+            return new unitTypes.Fighter(unit.x, unit.y, unit.z);
+        }
+        if (unit.type === 'fighter') {
+            return new unitTypes.Climber(unit.x, unit.y, unit.z);
+        }
+        return unit;
+    });
+};
+
 (function loop() {
     update();
     window.requestAnimationFrame(render);
@@ -119,6 +132,9 @@ document.onkeydown = function (event) {
     if (key === 'S' && mode === MODE_EDITOR) {
         var level = saveLevel();
         console.log('level = "' + level + '"');
+    }
+    if (key === ' ' && mode === MODE_PLAY) {
+        reverseRoles();
     }
 };
 

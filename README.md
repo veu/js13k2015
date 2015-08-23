@@ -8,7 +8,7 @@ Toggle modes with `E`.
 
 ### Play mode
 
-* No interaction possible at this point
+* Press `space` to swap roles
 
 ### Edit mode
 
