@@ -135,8 +135,8 @@ exports.Climber = function (x, y, z) {
             z -= 0.5;
         }
         canvas.translate3d(this.x, this.y, z);
-        canvas.drawPolygon('#ebcd91', [-6,5, 6,5, 6,25, -6,25], new UnitContext(this));
-        canvas.drawPolygon('#f8bc8a', [-6,5, 6,25, -6,25], new UnitContext(this));
+        canvas.drawPolygon('#11c869', [-6,5, 6,5, 6,25, -6,25], new UnitContext(this));
+        canvas.drawPolygon('#24ff78', [-6,5, 6,25, -6,25], new UnitContext(this));
         canvas.drawPolygon('#000', [-2,8, -2,11, -4,11, -4,8]);
         canvas.drawPolygon('#000', [2,8, 2,11, 4,11, 4,8]);
         canvas.pop();
