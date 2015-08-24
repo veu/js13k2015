@@ -125,7 +125,6 @@ function renderEditHelpers() {
 }
 
 function reverseRoles() {
-    console.log('what?');
     units = units.map(function (unit) {
         if (unit.type === 'climber') {
             return new unitTypes.Fighter(unit.x, unit.y, unit.z);
@@ -174,7 +173,9 @@ function saveLevel() {
         return '' + [unitTypeMap[unit.type], unit.x, unit.y, unit.z];
     }, '');
 
-    var level = strUnits.join(';') + '.' + map.toString();
+    var strTarget = map.target ? '' + [map.target.x, map.target.y, map.target.z] : '';
+
+    var level = [strUnits.join(';'), strTarget, map.toString()].join('.');
 
     return level;
 };
@@ -195,7 +196,12 @@ function loadLevel(level) {
         });
     }
 
-    map = new Map(level[1]);
+    map = new Map(level[2]);
+
+    if (level[1]) {
+        var coords = level[1].split(',');
+        map.target = new blockTypes.Target(+coords[0], +coords[1], +coords[2]);
+    }
 };
 
 document.onmousewheel = function (event) {
