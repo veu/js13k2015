@@ -4,14 +4,14 @@ var blockTypes = require('./blocks.js');
 
 var TYPE_EMPTY = 0;
 var TYPE_CUBE = 1;
-var TYPE_TARGET = 2;
-var TYPE_RAMPX = 3;
-var TYPE_RAMPY = 4;
+var TYPE_RAMPX = 2;
+var TYPE_RAMPY = 3;
 
 exports.Map = function (save) {
     var blocks = [];
     var size = {x: 9, y: 9, z: 9};
 
+    this.size = size;
     this.target = null;
 
     (function init() {
@@ -30,11 +30,9 @@ exports.Map = function (save) {
                         } else if (type === TYPE_RAMPX) {
                             blocks[z][y][x] = new blockTypes.Ramp(x, y, z, 'x');
                         } else if (type === TYPE_RAMPY) {
-                            blocks[z][y][x] = new blockTypes.Cube(x, y, z, 'y');
-                        } else if (type === TYPE_TARGET) {
-                            this.target = new blockTypes.Target(x, y, z);
+                            blocks[z][y][x] = new blockTypes.Ramp(x, y, z, 'y');
                         }
-                    } else if (z == 0 || x + y + z < 7) {
+                    } else if (z == 0) {
                         blocks[z][y][x] = new blockTypes.Cube(x, y, z);
                     }
                 }
@@ -146,9 +144,6 @@ exports.Map = function (save) {
                             type = TYPE_RAMPY;
                         }
                     }
-                    if (this.target && this.target.x === +x && this.target.y === +y && this.target.z === +z) {
-                        type = TYPE_TARGET;
-                    }
                     blockTypes.push(type);
                 }
             }
@@ -168,6 +163,9 @@ exports.Map = function (save) {
     };
 
     function isReachableNeighbor(a, b, climbing) {
+        if (a.z === 0 || b.z === 0) {
+            return false;
+        }
         if (blocks[b.z][b.y][b.x]) {
             return false;
         }
@@ -202,7 +200,7 @@ exports.Map = function (save) {
             }
             // air to ramp
             if (!aGround && bGround && bGround.type === 'ramp')  {
-                return dir === bGround.dir;
+                return dir === bGround.dir && a.z === b.z;
             }
             // air to cube
             if (!aGround && bGround && bGround.type === 'cube')  {
@@ -210,7 +208,7 @@ exports.Map = function (save) {
             }
             // ramp to air
             if (aGround && aGround.type === 'ramp' && !bGround)  {
-                return dir === aGround.dir;
+                return dir === aGround.dir && a.z === b.z;
             }
             // cube to air
             if (aGround && aGround.type === 'cube' && !bGround)  {

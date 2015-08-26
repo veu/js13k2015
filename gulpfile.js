@@ -3,6 +3,7 @@ var webpack = require('webpack-stream');
 var uglify = require('gulp-uglify');
 var zip = require('gulp-zip');
 var merge = require('merge-stream');
+var karma = require('karma');
 
 gulp.task('default', ['build'], function() {
     gulp.watch(['src/*'], ['build']);
@@ -36,4 +37,13 @@ gulp.task('dist', function() {
     return gulp.src('build/*')
     .pipe(zip('game.zip'))
     .pipe(gulp.dest('dist'));
+});
+
+gulp.task('test', function (done) {
+    karma.server.start({
+        configFile: __dirname + '/karma.conf.js',
+        singleRun: true
+    }, function(){
+        done();
+    });
 });

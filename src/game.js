@@ -5,6 +5,7 @@ var blockTypes = require('./blocks.js');
 var unitTypes = require('./units.js');
 var canvas = require('./canvas.js');
 var Map = require('./map.js').Map;
+var MapContext = require('./context.js').MapContext;
 
 var MODE_EDITOR = 0;
 var MODE_PLAY = 1;
@@ -40,6 +41,9 @@ var score = 0;
 function update() {
     if (mode === MODE_PLAY) {
         if (tick % 15 === 0) {
+            units.sort(function (a, b) {
+                return a.type > b.type ? -1 : a.type < b.type ? 1 : 0;
+            });
             units.forEach(function (unit) {
                 unit.move(map, units);
             });
@@ -75,6 +79,9 @@ function render() {
         canvas.drawText('score: ' + score, 10, 20);
     }
     canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 180);
+    if (mode === MODE_EDITOR) {
+        renderEditHelpers();
+    }
     map.render(canvas);
 
     var orderedUnits = units.slice();
@@ -93,8 +100,31 @@ function render() {
     canvas.pop();
 }
 
+function renderEditHelpers() {
+    for (var y = map.size.y; y--;) {
+        for (var x = map.size.x; x--;) {
+            canvas.translate3d(x, y, -1);
+            canvas.drawPolygon3d('#9c7f8a', [0,0,0, 1,0,0, 1,1,0, 0,1,0], new MapContext({x: x, y: y, z: -1}, 'z'));
+            canvas.pop();
+        }
+    }
+    for (var z = map.size.z; z--;) {
+        for (var x = map.size.x; x--;) {
+            canvas.translate3d(x, -1, z);
+            canvas.drawPolygon3d('#cec1ba', [1,1,0, 0,1,0, 0,1,1, 1,1,1], new MapContext({x: x, y: -1, z: z}, 'y'));
+            canvas.pop();
+        }
+    }
+    for (var z = map.size.z; z--;) {
+        for (var y = map.size.y; y--;) {
+            canvas.translate3d(-1, y, z);
+            canvas.drawPolygon3d('#846076', [1,1,0, 1,0,0, 1,0,1, 1,1,1], new MapContext({x: -1, y: y, z: z}, 'x'));
+            canvas.pop();
+        }
+    }
+}
+
 function reverseRoles() {
-    console.log('what?');
     units = units.map(function (unit) {
         if (unit.type === 'climber') {
             return new unitTypes.Fighter(unit.x, unit.y, unit.z);
@@ -143,7 +173,9 @@ function saveLevel() {
         return '' + [unitTypeMap[unit.type], unit.x, unit.y, unit.z];
     }, '');
 
-    var level = strUnits.join(';') + '.' + map.toString();
+    var strTarget = map.target ? '' + [map.target.x, map.target.y, map.target.z] : '';
+
+    var level = [strUnits.join(';'), strTarget, map.toString()].join('.');
 
     return level;
 };
@@ -164,7 +196,12 @@ function loadLevel(level) {
         });
     }
 
-    map = new Map(level[1]);
+    map = new Map(level[2]);
+
+    if (level[1]) {
+        var coords = level[1].split(',');
+        map.target = new blockTypes.Target(+coords[0], +coords[1], +coords[2]);
+    }
 };
 
 document.onmousewheel = function (event) {
@@ -196,7 +233,9 @@ events.on('canvas-clicked', function (context) {
         var block = context.block;
         var element = placeableElements[selectedPlaceableIndex];
         if (event.shiftKey) {
-            map.set(block.x, block.y, block.z, null);
+            if (map.isValid(block.x, block.y, block.z)) {
+                map.set(block.x, block.y, block.z, null);
+            }
         } else {
             var x = block.x + +(context.face === 'x');
             var y = block.y + +(context.face === 'y');
