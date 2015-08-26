@@ -200,7 +200,7 @@ exports.Map = function (save) {
             }
             // air to ramp
             if (!aGround && bGround && bGround.type === 'ramp')  {
-                return dir === bGround.dir && a.z === b.z;
+                return dir === bGround.dir && a.z < b.z;
             }
             // air to cube
             if (!aGround && bGround && bGround.type === 'cube')  {
@@ -208,7 +208,7 @@ exports.Map = function (save) {
             }
             // ramp to air
             if (aGround && aGround.type === 'ramp' && !bGround)  {
-                return dir === aGround.dir && a.z === b.z;
+                return dir === aGround.dir && a.z > b.z;
             }
             // cube to air
             if (aGround && aGround.type === 'cube' && !bGround)  {
