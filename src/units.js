@@ -61,8 +61,14 @@ exports.Fighter = function (x, y, z) {
             if (this.x === map.target.x && this.y === map.target.y && this.z === map.target.z) {
                 return;
             }
-            var directions = map.getDirectionsForTarget(map.target);
-            var newPos = directions[this.z][this.y][this.x];
+            var climbingDirections = map.getDirectionsForTarget(map.target, true);
+            var newPos;
+            var current = this;
+            while (current = climbingDirections[current.z][current.y][current.x]) {
+                if (map.get(current.x, current.y, current.z - 1)) {
+                    newPos = map.getDirectionsForTarget(current)[this.z][this.y][this.x] || newPos;
+                }
+            }
             if (!newPos) {
                 return;
             }
