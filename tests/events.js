@@ -1,5 +1,8 @@
+'use strict';
+
+var Events = require('../src/events.js');
+
 describe('Events', function () {
-    'use strict';
 
     it('triggers listeners', function () {
         var mockListener = {
