@@ -18,17 +18,52 @@ document.body.appendChild(canvas);
 var inputCanvas = document.createElement('canvas');
 var inputCtx = inputCanvas.getContext('2d');
 
+var currentTranslation;
 var translationStack = [];
 var inputData = {};
 var inputIndex = 0;
 
+var gradients = {
+    x: ctx.createRadialGradient(
+        width / 2 + 140, height / 2 + 90, 200,
+        width / 2 + 140, height / 2 + 90, 60
+    ),
+    xz: ctx.createRadialGradient(
+        width / 2 + 140, height / 2 - 90, 200,
+        width / 2 + 140, height / 2 - 90, 60
+    ),
+    y: ctx.createRadialGradient(
+        width / 2 - 140, height / 2 + 90, 200,
+        width / 2 - 140, height / 2 + 90, 60
+    ),
+    yz: ctx.createRadialGradient(
+        width / 2 - 140, height / 2 - 90, 200,
+        width / 2 - 140, height / 2 - 90, 60
+    ),
+    z: ctx.createRadialGradient(
+        width / 2, height / 2 - 180, 140,
+        width / 2, height / 2 - 180, 200
+    )
+};
+
+gradients.x.addColorStop(0, '#f5e7d3');
+gradients.x.addColorStop(1, '#dfd2c0');
+gradients.xz.addColorStop(0, '#f9f2dc');
+gradients.xz.addColorStop(1, '#efe8d7');
+gradients.y.addColorStop(0, '#d9cbc4');
+gradients.y.addColorStop(1, '#c4b8b1');
+gradients.yz.addColorStop(0, '#ebe4d5');
+gradients.yz.addColorStop(1, '#d1dbd0');
+gradients.z.addColorStop(0, '#fefee6');
+gradients.z.addColorStop(1, '#ffffef');
+
 function drawPolygon(ctx, color, points) {
     ctx.beginPath();
-    ctx.moveTo(points[0], points[1]);
+    ctx.moveTo(currentTranslation.x + points[0], currentTranslation.y + points[1]);
     for (var i = 2; i < points.length; ++i) {
-        ctx.lineTo(points[i], points[++i]);
+        ctx.lineTo(currentTranslation.x + points[i], currentTranslation.y + points[++i]);
     }
-    ctx.lineTo(points[i - 1], points[i]);
+    ctx.lineTo(currentTranslation.x + points[i - 1], currentTranslation.y + points[i]);
     ctx.fillStyle = color;
     ctx.fill();
 }
@@ -71,6 +106,7 @@ exports.drawBackground = function () {
     ctx.fillRect(0, 0, width, height);
     inputData = {};
     inputIndex = 0;
+    currentTranslation = {x: 0, y: 0};
 };
 
 exports.drawPolygon = function (color, points, data) {
@@ -85,6 +121,10 @@ exports.drawPolygon = function (color, points, data) {
 };
 
 exports.drawPolygon3d = function (color, points, data) {
+    if (gradients[color]) {
+         color = gradients[color];
+    }
+
     var points2d = [];
     for (var i = 0; i < points.length; i += 3) {
         points2d.push((points[i] - points[i + 1]) * 2 * blockSize);
@@ -95,12 +135,12 @@ exports.drawPolygon3d = function (color, points, data) {
 
 exports.drawText = function (text, x, y) {
     ctx.fillStyle = '#ccc';
-    ctx.fillText(text, x, y);
+    ctx.fillText(text, currentTranslation.x + x, currentTranslation.y + y);
 };
 
 exports.translate = function (x, y) {
-    ctx.translate(x, y);
-    inputCtx.translate(x, y);
+    currentTranslation.x += x;
+    currentTranslation.y += y;
     translationStack.push({x: x, y: y});
 };
 
@@ -110,8 +150,8 @@ exports.translate3d = function (x, y, z) {
 
 exports.pop = function () {
     var translation = translationStack.pop();
-    ctx.translate(-translation.x, -translation.y);
-    inputCtx.translate(-translation.x, -translation.y);
+    currentTranslation.x -= translation.x;
+    currentTranslation.y -= translation.y;
 };
 
 exports.getWidth = function () {

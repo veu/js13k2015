@@ -9,9 +9,9 @@ exports.Cube = function (x, y, z) {
     this.type = 'cube';
 
     this.render = function (canvas) {
-        canvas.drawPolygon3d('#dfd2c0', [0,0,0, 1,0,0, 1,0,1, 1,1,1, 0,1,1, 0,1,0], new MapContext(this, 'x'));
-        canvas.drawPolygon3d('#cec1ba', [1,1,0, 0,1,0, 0,1,1, 1,1,1], new MapContext(this, 'y'));
-        canvas.drawPolygon3d('#ffffe1', [0,0,0, 1,0,0, 1,1,0, 0,1,0], new MapContext(this, 'z'));
+        canvas.drawPolygon3d('x', [0,0,0, 1,0,0, 1,0,1, 1,1,1, 0,1,1, 0,1,0], new MapContext(this, 'x'));
+        canvas.drawPolygon3d('y', [1,1,0, 0,1,0, 0,1,1, 1,1,1], new MapContext(this, 'y'));
+        canvas.drawPolygon3d('z', [0,0,0, 1,0,0, 1,1,0, 0,1,0], new MapContext(this, 'z'));
     }
 };
 
@@ -36,11 +36,11 @@ exports.Ramp = function (x, y, z, dir) {
 
     this.render = function (canvas) {
         if (this.dir === 'y') {
-            canvas.drawPolygon3d('#f1ecd3', [1,0,0, 0,0,0, 0,1,1, 1,1,1], new MapContext(this, 'y'));
-            canvas.drawPolygon3d('#dfd2c0', [1,0,0, 1,1,1, 1,0,1], new MapContext(this, 'x'));
+            canvas.drawPolygon3d('yz', [1,0,0, 0,0,0, 0,1,1, 1,1,1], new MapContext(this, 'y'));
+            canvas.drawPolygon3d('x', [1,0,0, 1,1,1, 1,0,1], new MapContext(this, 'x'));
         } else {
-            canvas.drawPolygon3d('#f1ebd2', [0,1,0, 0,0,0, 1,0,1, 1,1,1], new MapContext(this, 'x'));
-            canvas.drawPolygon3d('#cec1ba', [0,1,0, 1,1,1, 0,1,1], new MapContext(this, 'y'));
+            canvas.drawPolygon3d('xz', [0,1,0, 0,0,0, 1,0,1, 1,1,1], new MapContext(this, 'x'));
+            canvas.drawPolygon3d('y', [0,1,0, 1,1,1, 0,1,1], new MapContext(this, 'y'));
         }
 
     };
