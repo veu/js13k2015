@@ -64,7 +64,6 @@ function update() {
             window.level = null;
         }
     }
-    tick++;
 }
 
 function render() {
@@ -94,10 +93,12 @@ function render() {
         return (a.x - b.x) + (a.y - b.y);
     });
     orderedUnits.forEach(function (unit) {
-        unit.render(canvas, map);
+        unit.render(canvas, map, tick);
     });
 
     canvas.pop();
+
+    tick++;
 }
 
 function renderEditHelpers() {
@@ -149,13 +150,17 @@ document.onkeydown = function (event) {
         if (mode === MODE_PLAY) {
             score = 0;
             units = unitPositions.map(function (unit) {
+                var newUnit;
                 if (unit.type === 'climber') {
-                    return new unitTypes.Climber(unit.x, unit.y, unit.z);
+                    newUnit = new unitTypes.Climber(unit.x, unit.y, unit.z);
+                } else if (unit.type === 'fighter') {
+                    newUnit = new unitTypes.Fighter(unit.x, unit.y, unit.z);
+                } else {
+                    newUnit = new unitTypes.Shadow(unit.x, unit.y, unit.z);
                 }
-                if (unit.type === 'fighter') {
-                    return new unitTypes.Fighter(unit.x, unit.y, unit.z);
-                }
-                return new unitTypes.Shadow(unit.x, unit.y, unit.z);
+                newUnit.last = unit.last;
+
+                return newUnit;
             });
         }
     }

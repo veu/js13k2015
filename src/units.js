@@ -54,6 +54,7 @@ exports.Fighter = function (x, y, z) {
     this.attack = Unit.attack;
 
     this.move = function (map, units) {
+        this.last = null;
         if (this.attack(map, units)) {
             return;
         }
@@ -78,19 +79,39 @@ exports.Fighter = function (x, y, z) {
             if (newPosIsTaken) {
                 return;
             }
+            this.last = {x: this.x, y: this.y, z: this.z};
             this.x = newPos.x;
             this.y = newPos.y;
             this.z = newPos.z;
         }
     };
 
-    this.render = function (canvas, map) {
-        var z = this.z;
+    this.render = function (canvas, map, tick) {
+        var z = 0;
         var block = map.get(this.x, this.y, this.z - 1);
         if (block && block.type === 'ramp') {
             z -= 0.5;
         }
-        canvas.translate3d(this.x, this.y, z);
+
+        var part = tick % 15 ? tick % 15 / 14 : 0;
+        var position;
+        if (this.last) {
+            var zLast = 0;
+            block = map.get(this.last.x, this.last.y, this.last.z - 1);
+            if (block && block.type === 'ramp') {
+                zLast -= 0.5;
+            }
+
+            position = {
+                x: this.x * part + this.last.x * (1 - part),
+                y: this.y * part + this.last.y * (1 - part),
+                z: (this.z + z) * part + (this.last.z + zLast) * (1 - part)
+            };
+        } else {
+            position = {x: this.x, y: this.y, z: this.z + z};
+        }
+
+        canvas.translate3d(position.x, position.y, position.z);
         canvas.drawPolygon('#ee3796', [-6,5, 6,5, 6,25, -6,25], new UnitContext(this));
         canvas.drawPolygon('#db0087', [-6,5, 6,25, -6,25], new UnitContext(this));
         canvas.drawPolygon('#000', [-2,8, -2,11, -4,11, -4,8]);
@@ -110,6 +131,7 @@ exports.Climber = function (x, y, z) {
     this.attack = Unit.attack;
 
     this.move = function (map, units) {
+        this.last = null;
         if (this.attack(map, units)) {
             return;
         }
@@ -128,19 +150,39 @@ exports.Climber = function (x, y, z) {
             if (newPosIsTaken) {
                 return;
             }
+            this.last = {x: this.x, y: this.y, z: this.z};
             this.x = newPos.x;
             this.y = newPos.y;
             this.z = newPos.z;
         }
     };
 
-    this.render = function (canvas, map) {
-        var z = this.z;
+    this.render = function (canvas, map, tick) {
+        var z = 0;
         var block = map.get(this.x, this.y, this.z - 1);
         if (block && block.type === 'ramp') {
             z -= 0.5;
         }
-        canvas.translate3d(this.x, this.y, z);
+
+        var part = tick % 15 ? tick % 15 / 14 : 0;
+        var position;
+        if (this.last) {
+            var zLast = 0;
+            block = map.get(this.last.x, this.last.y, this.last.z - 1);
+            if (block && block.type === 'ramp') {
+                zLast -= 0.5;
+            }
+
+            position = {
+                x: this.x * part + this.last.x * (1 - part),
+                y: this.y * part + this.last.y * (1 - part),
+                z: (this.z + z) * part + (this.last.z + zLast) * (1 - part)
+            };
+        } else {
+            position = {x: this.x, y: this.y, z: this.z + z};
+        }
+
+        canvas.translate3d(position.x, position.y, position.z);
         canvas.drawPolygon('#11c869', [-6,5, 6,5, 6,25, -6,25], new UnitContext(this));
         canvas.drawPolygon('#24ff78', [-6,5, 6,25, -6,25], new UnitContext(this));
         canvas.drawPolygon('#000', [-2,8, -2,11, -4,11, -4,8]);
@@ -163,7 +205,7 @@ exports.Shadow = function (x, y, z) {
         this.attack(map, units);
     };
 
-    this.render = function (canvas, map) {
+    this.render = function (canvas, map, tick) {
         var z = this.z;
         var block = map.get(this.x, this.y, this.z - 1);
         if (block && block.type === 'ramp') {
