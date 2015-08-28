@@ -52,7 +52,7 @@ function update() {
                 if (unit.life <= 0) {
                     return false;
                 }
-                if (map.target && unit.x === map.target.x && unit.y === map.target.y && unit.z === map.target.z) {
+                if (map.target && unit.pos.equals(map.target)) {
                     score ++;
                     return false;
                 }
@@ -91,7 +91,7 @@ function render() {
         orderedUnits = units.slice();
     }
     orderedUnits.sort(function (a, b) {
-        return (a.x - b.x) + (a.y - b.y);
+        return (a.pos.x - b.pos.x) + (a.pos.y - b.pos.y);
     });
     orderedUnits.forEach(function (unit) {
         unit.render(canvas, map, tick);
@@ -129,10 +129,10 @@ function renderEditHelpers() {
 function reverseRoles() {
     units = units.map(function (unit) {
         if (unit.type === 'climber') {
-            return new unitTypes.Fighter(unit.x, unit.y, unit.z);
+            return new unitTypes.Fighter(unit.pos.x, unit.pos.y, unit.pos.z);
         }
         if (unit.type === 'fighter') {
-            return new unitTypes.Climber(unit.x, unit.y, unit.z);
+            return new unitTypes.Climber(unit.pos.x, unit.pos.y, unit.pos.z);
         }
         return unit;
     });
@@ -153,11 +153,11 @@ document.onkeydown = function (event) {
             units = unitPositions.map(function (unit) {
                 var newUnit;
                 if (unit.type === 'climber') {
-                    newUnit = new unitTypes.Climber(unit.x, unit.y, unit.z);
+                    newUnit = new unitTypes.Climber(unit.pos.x, unit.pos.y, unit.pos.z);
                 } else if (unit.type === 'fighter') {
-                    newUnit = new unitTypes.Fighter(unit.x, unit.y, unit.z);
+                    newUnit = new unitTypes.Fighter(unit.pos.x, unit.pos.y, unit.pos.z);
                 } else {
-                    newUnit = new unitTypes.Shadow(unit.x, unit.y, unit.z);
+                    newUnit = new unitTypes.Shadow(unit.pos.x, unit.pos.y, unit.pos.z);
                 }
                 newUnit.last = unit.last;
 
@@ -176,7 +176,7 @@ document.onkeydown = function (event) {
 
 function saveLevel() {
     var strUnits = unitPositions.map(function(unit) {
-        return '' + [unitTypeMap[unit.type], unit.x, unit.y, unit.z];
+        return '' + [unitTypeMap[unit.type], unit.pos.x, unit.pos.y, unit.pos.z];
     }, '');
 
     var strTarget = map.target ? '' + [map.target.x, map.target.y, map.target.z] : '';
@@ -232,8 +232,8 @@ events.on('canvas-clicked', function (context) {
     if (mode === MODE_EDITOR) {
         if (context.type === 'unit') {
             unitPositions = unitPositions.filter(function (unit) {
-                return unit.x !== context.unit.x || unit.y !== context.unit.y || unit.z !== context.unit.z;
-            })
+                return !unit.x.equals(context.unit);
+            });
             return;
         }
         var block = context.block;
