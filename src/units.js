@@ -55,35 +55,34 @@ exports.Fighter = function (x, y, z) {
 
     this.move = function (map, units) {
         this.last = null;
-        if (this.attack(map, units)) {
+        if (this.attack(map, units) || !map.target) {
             return;
         }
-        if (map.target) {
-            if (this.x === map.target.x && this.y === map.target.y && this.z === map.target.z) {
-                return;
-            }
-            var climbingDirections = map.getDirectionsForTarget(map.target, true);
-            var newPos;
-            var current = this;
-            while (current = climbingDirections[current.z][current.y][current.x]) {
-                if (map.get(current.x, current.y, current.z - 1)) {
-                    newPos = map.getDirectionsForTarget(current)[this.z][this.y][this.x] || newPos;
-                }
-            }
-            if (!newPos) {
-                return;
-            }
-            var newPosIsTaken = units.some(function (unit) {
-                return unit.x === newPos.x && unit.y === newPos.y && unit.z === newPos.z;
-            });
-            if (newPosIsTaken) {
-                return;
-            }
-            this.last = {x: this.x, y: this.y, z: this.z};
-            this.x = newPos.x;
-            this.y = newPos.y;
-            this.z = newPos.z;
+        if (this.x === map.target.x && this.y === map.target.y && this.z === map.target.z) {
+            return;
         }
+
+        var climbingDirections = map.getDirectionsForTarget(map.target, true);
+        var newPos;
+        for (var current = this; current = climbingDirections[current.z][current.y][current.x]; ) {
+            if (map.get(current.x, current.y, current.z - 1)) {
+                newPos = map.getDirectionsForTarget(current)[this.z][this.y][this.x] || newPos;
+            }
+        }
+        if (!newPos) {
+            return;
+        }
+        var newPosIsTaken = units.some(function (unit) {
+            return unit.x === newPos.x && unit.y === newPos.y && unit.z === newPos.z;
+        });
+        if (newPosIsTaken) {
+            return;
+        }
+
+        this.last = {x: this.x, y: this.y, z: this.z};
+        this.x = newPos.x;
+        this.y = newPos.y;
+        this.z = newPos.z;
     };
 
     this.render = function (canvas, map, tick) {
@@ -132,29 +131,29 @@ exports.Climber = function (x, y, z) {
 
     this.move = function (map, units) {
         this.last = null;
-        if (this.attack(map, units)) {
+        if (this.attack(map, units) || !map.target) {
             return;
         }
-        if (map.target) {
-            if (this.x === map.target.x && this.y === map.target.y && this.z === map.target.z) {
-                return;
-            }
-            var directions = map.getDirectionsForTarget(map.target, true);
-            var newPos = directions[this.z][this.y][this.x];
-            if (!newPos) {
-                return;
-            }
-            var newPosIsTaken = units.some(function (unit) {
-                return unit.x === newPos.x && unit.y === newPos.y && unit.z === newPos.z;
-            });
-            if (newPosIsTaken) {
-                return;
-            }
-            this.last = {x: this.x, y: this.y, z: this.z};
-            this.x = newPos.x;
-            this.y = newPos.y;
-            this.z = newPos.z;
+        if (this.x === map.target.x && this.y === map.target.y && this.z === map.target.z) {
+            return;
         }
+
+        var directions = map.getDirectionsForTarget(map.target, true);
+        var newPos = directions[this.z][this.y][this.x];
+        if (!newPos) {
+            return;
+        }
+        var newPosIsTaken = units.some(function (unit) {
+            return unit.x === newPos.x && unit.y === newPos.y && unit.z === newPos.z;
+        });
+        if (newPosIsTaken) {
+            return;
+        }
+
+        this.last = {x: this.x, y: this.y, z: this.z};
+        this.x = newPos.x;
+        this.y = newPos.y;
+        this.z = newPos.z;
     };
 
     this.render = function (canvas, map, tick) {
