@@ -1,17 +1,14 @@
 'use strict';
 
-var UnitContext = require('./context.js').UnitContext;
 var config = require('./config.js').units;
+var UnitContext = require('./context.js').UnitContext;
+var Vector = require('./vector.js').Vector;
 
 var Unit = {
     attack: function (map, units) {
         var adjacent = [{x: 1, y: 0}, {x: -1, y: 0}, {x: 0, y: 1}, {x: 0, y: -1}];
         var reachableUnits = units.filter(function (unit) {
-            var diff = {
-                x: Math.abs(unit.x - this.x),
-                y: Math.abs(unit.y - this.y),
-                z: Math.abs(unit.z - this.z)
-            };
+            var diff = (new Vector(unit.x, unit.y, unit.z)).diff(this);
             if (diff.x + diff.y !== 1) {
                 return false;
             }
@@ -79,7 +76,7 @@ exports.Fighter = function (x, y, z) {
             return;
         }
 
-        this.last = {x: this.x, y: this.y, z: this.z};
+        this.last = new Vector(this.x, this.y, this.z);
         this.x = newPos.x;
         this.y = newPos.y;
         this.z = newPos.z;
@@ -150,7 +147,7 @@ exports.Climber = function (x, y, z) {
             return;
         }
 
-        this.last = {x: this.x, y: this.y, z: this.z};
+        this.last = new Vector(this.x, this.y, this.z);
         this.x = newPos.x;
         this.y = newPos.y;
         this.z = newPos.z;
@@ -172,13 +169,13 @@ exports.Climber = function (x, y, z) {
                 zLast -= 0.5;
             }
 
-            position = {
-                x: this.x * part + this.last.x * (1 - part),
-                y: this.y * part + this.last.y * (1 - part),
-                z: (this.z + z) * part + (this.last.z + zLast) * (1 - part)
-            };
+            position = new Vector(
+                this.x * part + this.last.x * (1 - part),
+                this.y * part + this.last.y * (1 - part),
+                (this.z + z) * part + (this.last.z + zLast) * (1 - part)
+            );
         } else {
-            position = {x: this.x, y: this.y, z: this.z + z};
+            position = new Vector(this.x, this.y, this.z + z);
         }
 
         canvas.translate3d(position.x, position.y, position.z);

@@ -1,6 +1,7 @@
 'use strict';
 
 var blockTypes = require('./blocks.js');
+var Vector = require('./vector.js').Vector;
 
 var TYPE_EMPTY = 0;
 var TYPE_CUBE = 1;
@@ -9,7 +10,7 @@ var TYPE_RAMPY = 3;
 
 exports.Map = function (save) {
     var blocks = [];
-    var size = {x: 9, y: 9, z: 9};
+    var size = new Vector(9, 9, 9);
 
     this.size = size;
     this.target = null;
@@ -41,10 +42,18 @@ exports.Map = function (save) {
     }).call(this);
 
     this.get = function (x, y, z) {
+        if (y === undefined) {
+            return blocks[x.z] && blocks[x.z][x.y] && blocks[x.z][x.y][x.x];
+        }
+
         return blocks[z] && blocks[z][y] && blocks[z][y][x];
     };
 
     var isValid = this.isValid = function (x, y, z) {
+        if (y === undefined) {
+            return isValid(x.x, x.y, x.z);
+        }
+
         if (z < 0 || z >= size.z || y < 0 || y >= size.y || x < 0 || x >= size.x) {
             return false;
         }
@@ -91,16 +100,16 @@ exports.Map = function (save) {
             }
         }
 
-        var todo = [{x: target.x, y: target.y, z: target.z, distance: 0}];
+        var todo = [{pos: new Vector(target.x, target.y, target.z), distance: 0}];
         distances[target.z][target.y][target.x] = 0;
         while (todo.length > 0) {
             var current = todo.pop();
-            this.getReachableNeighbors(current, climbing).forEach(function (neighbor) {
+            this.getReachableNeighbors(current.pos, climbing).forEach(function (neighbor) {
                 var distance = current.distance + 1;
                 if (!blocks[neighbor.z][neighbor.y][neighbor.x] && distances[neighbor.z][neighbor.y][neighbor.x] > distance) {
                     distances[neighbor.z][neighbor.y][neighbor.x] = distance;
-                    directions[neighbor.z][neighbor.y][neighbor.x] = {x: current.x, y: current.y, z: current.z};
-                    todo.push({x: neighbor.x, y: neighbor.y, z: neighbor.z, distance: distance});
+                    directions[neighbor.z][neighbor.y][neighbor.x] = current.pos;
+                    todo.push({pos: neighbor.clone(), distance: distance});
                 }
             }, this);
             todo.sort(function (a, b) { return b.distance - a.distance; });
@@ -114,10 +123,10 @@ exports.Map = function (save) {
         for (var z = -1; z < 2; z++) {
             for (var y = -1; y < 2; y++) {
                 for (var x = -1; x < 2; x++) {
-                    var neighbor = {x: origin.x + x, y: origin.y + y, z: origin.z + z};
+                    var neighbor = origin.add(new Vector(x, y, z));
                     if ((x !== 0 || y !== 0 || z !== 0) &&
                         (x === 0 || y === 0) &&
-                        this.isValid(neighbor.x, neighbor.y, neighbor.z) &&
+                        this.isValid(neighbor) &&
                         (isReachableNeighbor(origin, neighbor, climbing))) {
                         neighbors.push(neighbor);
                     }

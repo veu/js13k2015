@@ -6,6 +6,7 @@ var unitTypes = require('./units.js');
 var canvas = require('./canvas.js');
 var Map = require('./map.js').Map;
 var MapContext = require('./context.js').MapContext;
+var Vector = require('./vector.js').Vector;
 
 var MODE_EDITOR = 0;
 var MODE_PLAY = 1;
@@ -105,21 +106,21 @@ function renderEditHelpers() {
     for (var y = map.size.y; y--;) {
         for (var x = map.size.x; x--;) {
             canvas.translate3d(x, y, -1);
-            canvas.drawPolygon3d('#9c7f8a', [0,0,0, 1,0,0, 1,1,0, 0,1,0], new MapContext({x: x, y: y, z: -1}, 'z'));
+            canvas.drawPolygon3d('#9c7f8a', [0,0,0, 1,0,0, 1,1,0, 0,1,0], new MapContext(new Vector(x, y, -1), 'z'));
             canvas.pop();
         }
     }
     for (var z = map.size.z; z--;) {
         for (var x = map.size.x; x--;) {
             canvas.translate3d(x, -1, z);
-            canvas.drawPolygon3d('#cec1ba', [1,1,0, 0,1,0, 0,1,1, 1,1,1], new MapContext({x: x, y: -1, z: z}, 'y'));
+            canvas.drawPolygon3d('#cec1ba', [1,1,0, 0,1,0, 0,1,1, 1,1,1], new MapContext(new Vector(x, -1, z), 'y'));
             canvas.pop();
         }
     }
     for (var z = map.size.z; z--;) {
         for (var y = map.size.y; y--;) {
             canvas.translate3d(-1, y, z);
-            canvas.drawPolygon3d('#846076', [1,1,0, 1,0,0, 1,0,1, 1,1,1], new MapContext({x: -1, y: y, z: z}, 'x'));
+            canvas.drawPolygon3d('#846076', [1,1,0, 1,0,0, 1,0,1, 1,1,1], new MapContext(new Vector(-1, y, z), 'x'));
             canvas.pop();
         }
     }
