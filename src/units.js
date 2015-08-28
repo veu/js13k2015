@@ -49,15 +49,15 @@ exports.Fighter = function (x, y, z) {
 
     this.move = function (map, units) {
         this.last = null;
-        if (this.attack(map, units) || !map.target || this.pos.equals(map.target)) {
+        if (this.attack(map, units) || !map.target || this.pos.equals(map.target.pos)) {
             return;
         }
 
-        var climbingDirections = map.getDirectionsForTarget(map.target, true);
+        var climbingDirections = map.getDirectionsForTarget(map.target.pos, true);
         var newPos;
-        for (var current = this.pos; current = climbingDirections[current.z][current.y][current.x]; ) {
+        for (var current = this.pos; current = climbingDirections[current]; ) {
             if (map.get(current.sub(0, 0, 1))) {
-                newPos = map.getDirectionsForTarget(current)[this.pos.z][this.pos.y][this.pos.x] || newPos;
+                newPos = map.getDirectionsForTarget(current)[this.pos] || newPos;
             }
         }
         if (!newPos) {
@@ -112,12 +112,12 @@ exports.Climber = function (x, y, z) {
 
     this.move = function (map, units) {
         this.last = null;
-        if (this.attack(map, units) || !map.target || this.pos.equals(map.target)) {
+        if (this.attack(map, units) || !map.target || this.pos.equals(map.target.pos)) {
             return;
         }
 
-        var directions = map.getDirectionsForTarget(map.target, true);
-        var newPos = directions[this.pos.z][this.pos.y][this.pos.x];
+        var directions = map.getDirectionsForTarget(map.target.pos, true);
+        var newPos = directions[this.pos];
         if (!newPos) {
             return;
         }

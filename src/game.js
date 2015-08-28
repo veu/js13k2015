@@ -52,7 +52,7 @@ function update() {
                 if (unit.life <= 0) {
                     return false;
                 }
-                if (map.target && unit.pos.equals(map.target)) {
+                if (map.target && unit.pos.equals(map.target.pos)) {
                     score ++;
                     return false;
                 }
@@ -179,11 +179,7 @@ function saveLevel() {
         return '' + [unitTypeMap[unit.type], unit.pos.x, unit.pos.y, unit.pos.z];
     }, '');
 
-    var strTarget = map.target ? '' + [map.target.x, map.target.y, map.target.z] : '';
-
-    var level = [strUnits.join(';'), strTarget, map.toString()].join('.');
-
-    return level;
+    return [strUnits.join(';'), map.target && map.target.pos || '', map].join('.');
 };
 
 function loadLevel(level) {
@@ -220,19 +216,10 @@ document.onmousewheel = function (event) {
 }
 
 events.on('canvas-clicked', function (context) {
-    if (mode === MODE_PLAY) {
-        var target = {};
-        for (var i in context.block) {
-            target[i] = context.block[i];
-        }
-        target.z++;
-        units.forEach(function (unit) { unit.target = target; });
-    }
-
     if (mode === MODE_EDITOR) {
         if (context.type === 'unit') {
             unitPositions = unitPositions.filter(function (unit) {
-                return !unit.x.equals(context.unit);
+                return !unit.pos.equals(context.unit.pos);
             });
             return;
         }

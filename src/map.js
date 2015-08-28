@@ -78,39 +78,28 @@ exports.Map = function (save) {
         }
 
         if (this.target) {
-            canvas.translate3d(+this.target.x, +this.target.y, +this.target.z);
+            canvas.translate3d(this.target.pos.x, this.target.pos.y, this.target.pos.z);
             this.target.render(canvas);
             canvas.pop();
         }
     };
 
     this.getDirectionsForTarget = function (target, climbing) {
-        var distances = [],
-            directions = [];
-        for (var z = size.z; z--;) {
-            distances[z] = [];
-            directions[z] = [];
-            for (var y = size.y; y--;) {
-                distances[z][y] = [];
-                directions[z][y] = [];
-                for (var x = size.x; x--;) {
-                    distances[z][y][x] = 100000000;
-                    directions[z][y][x] = null;
-                }
-            }
-        }
+        var distances = {};
+        var directions = {};
 
-        var todo = [{pos: new Vector(target.x, target.y, target.z), distance: 0}];
-        distances[target.z][target.y][target.x] = 0;
+        var todo = [{pos: target, distance: 0}];
+        distances[target] = 0;
         while (todo.length > 0) {
             var current = todo.pop();
             this.getReachableNeighbors(current.pos, climbing).forEach(function (neighbor) {
                 var distance = current.distance + 1;
-                if (!blocks[neighbor.z][neighbor.y][neighbor.x] && distances[neighbor.z][neighbor.y][neighbor.x] > distance) {
-                    distances[neighbor.z][neighbor.y][neighbor.x] = distance;
-                    directions[neighbor.z][neighbor.y][neighbor.x] = current.pos;
-                    todo.push({pos: neighbor.clone(), distance: distance});
+                if (blocks[neighbor.z][neighbor.y][neighbor.x] || distances[neighbor] <= distance) {
+                    return;
                 }
+                distances[neighbor] = distance;
+                directions[neighbor] = current.pos;
+                todo.push({pos: neighbor, distance: distance});
             }, this);
             todo.sort(function (a, b) { return b.distance - a.distance; });
         }
@@ -123,11 +112,8 @@ exports.Map = function (save) {
         for (var z = -1; z < 2; z++) {
             for (var y = -1; y < 2; y++) {
                 for (var x = -1; x < 2; x++) {
-                    var neighbor = origin.add(new Vector(x, y, z));
-                    if ((x !== 0 || y !== 0 || z !== 0) &&
-                        (x === 0 || y === 0) &&
-                        this.isValid(neighbor) &&
-                        (isReachableNeighbor(origin, neighbor, climbing))) {
+                    var neighbor = origin.add(x, y, z);
+                    if ((x === 0 || y === 0) && isReachableNeighbor(origin, neighbor, climbing)) {
                         neighbors.push(neighbor);
                     }
                 }
@@ -146,11 +132,8 @@ exports.Map = function (save) {
                         if (blocks[z][y][x].type === 'cube') {
                             type = TYPE_CUBE;
                         }
-                        if (blocks[z][y][x].type === 'ramp' && blocks[z][y][x].dir === 'x') {
-                            type = TYPE_RAMPX;
-                        }
-                        if (blocks[z][y][x].type === 'ramp' && blocks[z][y][x].dir === 'y') {
-                            type = TYPE_RAMPY;
+                        if (blocks[z][y][x].type === 'ramp') {
+                            type = blocks[z][y][x].dir === 'x' ? TYPE_RAMPX : TYPE_RAMPY;
                         }
                     }
                     blockTypes.push(type);
@@ -172,6 +155,10 @@ exports.Map = function (save) {
     };
 
     function isReachableNeighbor(a, b, climbing) {
+        if (!isValid(b) || a.equals(b)) {
+            return false;
+        }
+
         if (a.z === 0 || b.z === 0) {
             return false;
         }

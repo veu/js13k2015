@@ -6,6 +6,10 @@ function Vector(x, y, z) {
     this.z = z;
 };
 
+Vector.prototype.toString = function () {
+    return '' + [this.x, this.y, this.z];
+};
+
 Vector.prototype.clone = function () {
     return new Vector(this.x, this.y, this.z);
 };

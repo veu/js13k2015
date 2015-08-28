@@ -1,6 +1,7 @@
 'use strict';
 
 var MapContext = require('./context.js').MapContext;
+var Vector = require('./vector.js').Vector;
 
 exports.Cube = function (x, y, z) {
     this.x = x;
@@ -16,9 +17,7 @@ exports.Cube = function (x, y, z) {
 };
 
 exports.Target = function (x, y, z) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
+    this.pos = new Vector(x, y, z);
     this.type = 'target';
 
     this.render = function (canvas) {
