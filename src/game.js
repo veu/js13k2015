@@ -127,14 +127,11 @@ function renderEditHelpers() {
 }
 
 function reverseRoles() {
+    var unitMap = {climber: 'fighter', fighter: 'climber', shadow: 'shadow' };
     units = units.map(function (unit) {
-        if (unit.type === 'climber') {
-            return new unitTypes.Fighter(unit.pos.x, unit.pos.y, unit.pos.z);
-        }
-        if (unit.type === 'fighter') {
-            return new unitTypes.Climber(unit.pos.x, unit.pos.y, unit.pos.z);
-        }
-        return unit;
+        var newUnit = unitTypes.createUnit(unitMap[unit.type], unit.pos.x, unit.pos.y, unit.pos.z);
+        newUnit.last = unit.last;
+        return newUnit;
     });
 };
 
@@ -151,17 +148,7 @@ document.onkeydown = function (event) {
         if (mode === MODE_PLAY) {
             score = 0;
             units = unitPositions.map(function (unit) {
-                var newUnit;
-                if (unit.type === 'climber') {
-                    newUnit = new unitTypes.Climber(unit.pos.x, unit.pos.y, unit.pos.z);
-                } else if (unit.type === 'fighter') {
-                    newUnit = new unitTypes.Fighter(unit.pos.x, unit.pos.y, unit.pos.z);
-                } else {
-                    newUnit = new unitTypes.Shadow(unit.pos.x, unit.pos.y, unit.pos.z);
-                }
-                newUnit.last = unit.last;
-
-                return newUnit;
+                return unitTypes.createUnit(unit.type, unit.pos.x, unit.pos.y, unit.pos.z);
             });
         }
     }
@@ -246,14 +233,10 @@ events.on('canvas-clicked', function (context) {
                 map.set(x, y, z, new blockTypes.Cube(x, y, z));
             } else if (element.type === 'ramp') {
                 map.set(x, y, z, new blockTypes.Ramp(x, y, z, element.dir));
-            } else if (element.type === 'fighter') {
-                unitPositions.push(new unitTypes.Fighter(x, y, z));
-            } else if (element.type === 'climber') {
-                unitPositions.push(new unitTypes.Climber(x, y, z));
-            } else if (element.type === 'shadow') {
-                unitPositions.push(new unitTypes.Shadow(x, y, z));
             } else if (element.type === 'target') {
                 map.target = new blockTypes.Target(x, y, z);
+            } else if (['fighter', 'climber', 'shadow'].indexOf(element.type) >= 0) {
+                unitPositions.push(unitTypes.createUnit(element.type, x, y, z));
             }
         }
     };

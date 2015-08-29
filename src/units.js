@@ -186,3 +186,13 @@ exports.Shadow = function (x, y, z) {
         canvas.pop();
     };
 };
+
+exports.createUnit = function (type, x, y, z) {
+    var types = {
+        climber: exports.Climber,
+        fighter: exports.Fighter,
+        shadow: exports.Shadow
+    };
+
+    return new types[type](x, y, z);
+};
