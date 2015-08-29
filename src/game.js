@@ -203,41 +203,47 @@ document.onmousewheel = function (event) {
 }
 
 events.on('canvas-clicked', function (context) {
-    if (mode === MODE_EDITOR) {
-        if (context.type === 'unit') {
-            unitPositions = unitPositions.filter(function (unit) {
-                return !unit.pos.equals(context.unit.pos);
-            });
-            return;
+    if (mode !== MODE_EDITOR) {
+        return;
+    }
+
+    if (context.type === 'unit') {
+        unitPositions = unitPositions.filter(function (unit) {
+            return !unit.pos.equals(context.unit.pos);
+        });
+        return;
+    }
+
+    var block = context.block;
+    var element = placeableElements[selectedPlaceableIndex];
+    if (event.shiftKey) {
+        if (map.isValid(block.x, block.y, block.z)) {
+            map.set(block.x, block.y, block.z, null);
         }
-        var block = context.block;
-        var element = placeableElements[selectedPlaceableIndex];
-        if (event.shiftKey) {
-            if (map.isValid(block.x, block.y, block.z)) {
-                map.set(block.x, block.y, block.z, null);
-            }
-        } else {
-            var x = block.x + +(context.face === 'x');
-            var y = block.y + +(context.face === 'y');
-            var z = block.z + +(context.face === 'z');
-            if (!map.isValid(x, y, z)) {
-                return;
-            }
-            var spotTaken = unitPositions.some(function (unit) {
-                return unit.x === x && unit.y === y && unit.z === z;
-            });
-            if (spotTaken) {
-                return;
-            }
-            if (element.type === 'cube') {
-                map.set(x, y, z, new blockTypes.Cube(x, y, z));
-            } else if (element.type === 'ramp') {
-                map.set(x, y, z, new blockTypes.Ramp(x, y, z, element.dir));
-            } else if (element.type === 'target') {
-                map.target = new blockTypes.Target(x, y, z);
-            } else if (['fighter', 'climber', 'shadow'].indexOf(element.type) >= 0) {
-                unitPositions.push(unitTypes.createUnit(element.type, x, y, z));
-            }
-        }
-    };
+        return;
+    }
+
+    var x = block.x + +(context.face === 'x');
+    var y = block.y + +(context.face === 'y');
+    var z = block.z + +(context.face === 'z');
+    if (!map.isValid(x, y, z)) {
+        return;
+    }
+
+    var spotTaken = unitPositions.some(function (unit) {
+        return unit.x === x && unit.y === y && unit.z === z;
+    });
+    if (spotTaken) {
+        return;
+    }
+
+    if (element.type === 'cube') {
+        map.set(x, y, z, new blockTypes.Cube(x, y, z));
+    } else if (element.type === 'ramp') {
+        map.set(x, y, z, new blockTypes.Ramp(x, y, z, element.dir));
+    } else if (element.type === 'target') {
+        map.target = new blockTypes.Target(x, y, z);
+    } else if (['fighter', 'climber', 'shadow'].indexOf(element.type) >= 0) {
+        unitPositions.push(unitTypes.createUnit(element.type, x, y, z));
+    }
 });
