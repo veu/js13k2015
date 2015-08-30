@@ -1,5 +1,6 @@
 'use strict';
 
+var config = require('./config.js').units;
 var events = require('./events.js');
 var blockTypes = require('./blocks.js');
 var unitTypes = require('./units.js');
@@ -50,6 +51,9 @@ function update() {
             });
             units = units.filter(function (unit) {
                 if (unit.life <= 0) {
+                    return false;
+                }
+                if (isUnitWithLowestLifeAtPosition(unit)) {
                     return false;
                 }
                 if (map.target && unit.pos.equals(map.target.pos)) {
@@ -131,9 +135,16 @@ function reverseRoles() {
     units = units.map(function (unit) {
         var newUnit = unitTypes.createUnit(unitMap[unit.type], unit.pos.x, unit.pos.y, unit.pos.z);
         newUnit.last = unit.last;
+        newUnit.life = unit.life;
         return newUnit;
     });
-};
+}
+
+function isUnitWithLowestLifeAtPosition(unit) {
+    return units.some(function (otherUnit) {
+        return otherUnit !== unit && otherUnit.pos.equals(unit.pos) && otherUnit.life >= unit.life;
+    });
+}
 
 (function loop() {
     update();

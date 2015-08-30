@@ -5,7 +5,8 @@ exports.units = {
     },
     fighter: {
         life: 24,
-        damage: 12
+        damage: 12,
+        fallDamage: 8
     },
     shadow: {
         life: 24,

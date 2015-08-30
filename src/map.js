@@ -154,6 +154,14 @@ exports.Map = function (save) {
         return btoa(compressedBlockTypes);
     };
 
+    this.getTopBlockAt = function (x, y) {
+        for (var z = size.z; z--;) {
+            if (blocks[z][y][x]) {
+                return blocks[z][y][x];
+            }
+        }
+    };
+
     function isReachableNeighbor(a, b, climbing) {
         if (!isValid(b) || a.equals(b)) {
             return false;

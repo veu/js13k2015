@@ -48,7 +48,16 @@ exports.Fighter = function (x, y, z) {
     this.attack = Unit.attack;
 
     this.move = function (map, units) {
+        var groundBlock = map.get(this.pos.sub(0, 0, 1));
         this.last = null;
+        if (!groundBlock) {
+            this.last = this.pos;
+            this.pos = this.pos.sub(0, 0, 1);
+            if (map.get(this.pos.sub(0, 0, 1))) {
+                this.life -= config.fighter.fallDamage;
+            }
+            return;
+        }
         if (this.attack(map, units) || !map.target || this.pos.equals(map.target.pos)) {
             return;
         }
