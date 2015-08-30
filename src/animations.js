@@ -37,3 +37,20 @@ exports.FallingAnimation = function (last, current, length) {
         return step === length;
     };
 };
+
+exports.FightingAnimation = function (length) {
+    var step = 0;
+
+    this.beforeRendering = function (canvas) {
+        canvas.translate(0, -Math.pow(7 - Math.abs(7 - step), 2) / 8);
+    };
+
+    this.afterRendering = function (canvas) {
+        canvas.pop();
+        step++;
+    };
+
+    this.hasEnded = function () {
+        return step === length;
+    };
+};

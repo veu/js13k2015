@@ -60,7 +60,11 @@ exports.Fighter = function (x, y, z) {
             }
             return;
         }
-        if (this.attack(map, units) || !map.target || this.pos.equals(map.target.pos)) {
+        if (this.attack(map, units)) {
+            this.animation = new animations.FightingAnimation(15);
+            return;
+        }
+        if (!map.target || this.pos.equals(map.target.pos)) {
             return;
         }
 
@@ -115,7 +119,11 @@ exports.Climber = function (x, y, z) {
     this.attack = Unit.attack;
 
     this.move = function (map, units) {
-        if (this.attack(map, units) || !map.target || this.pos.equals(map.target.pos)) {
+        if (this.attack(map, units)) {
+            this.animation = new animations.FightingAnimation(15);
+            return;
+        }
+        if (!map.target || this.pos.equals(map.target.pos)) {
             return;
         }
 
@@ -165,15 +173,26 @@ exports.Shadow = function (x, y, z) {
     this.attack = Unit.attack;
 
     this.move = function (map, units) {
-        this.attack(map, units);
+        if (this.attack(map, units)) {
+            this.animation = new animations.FightingAnimation(15);
+        }
     };
 
     this.render = function (canvas, map, tick) {
         canvas.translate3d(map.getUnitRenderPosition(this.pos));
+        if (this.animation) {
+            this.animation.beforeRendering(canvas);
+        }
         canvas.drawPolygon('#3a0033', [-6,5, 6,5, 6,25, -6,25], new UnitContext(this));
         canvas.drawPolygon('#4a1144', [-6,5, 6,25, -6,25], new UnitContext(this));
         canvas.drawPolygon('#6f7', [-2,8, -2,11, -4,11, -4,8]);
         canvas.drawPolygon('#6f7', [2,8, 2,11, 4,11, 4,8]);
+        if (this.animation) {
+            this.animation.afterRendering(canvas);
+            if (this.animation.hasEnded()) {
+                this.animation = null;
+            }
+        }
         canvas.pop();
     };
 };
