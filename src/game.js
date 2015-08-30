@@ -43,12 +43,6 @@ var score = 0;
 function update() {
     if (mode === MODE_PLAY) {
         if (tick % 15 === 0) {
-            units.sort(function (a, b) {
-                return a.type > b.type ? -1 : a.type < b.type ? 1 : 0;
-            });
-            units.forEach(function (unit) {
-                unit.move(map, units);
-            });
             units = units.filter(function (unit) {
                 if (unit.life <= 0) {
                     return false;
@@ -61,6 +55,12 @@ function update() {
                     return false;
                 }
                 return true;
+            });
+            units.sort(function (a, b) {
+                return a.type > b.type ? -1 : a.type < b.type ? 1 : 0;
+            });
+            units.forEach(function (unit) {
+                unit.move(map, units);
             });
         }
     } else if (mode === MODE_EDITOR) {
