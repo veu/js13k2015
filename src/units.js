@@ -51,7 +51,7 @@ exports.Fighter = function (x, y, z) {
     this.move = function (map, units) {
         var groundBlock = map.get(this.pos.sub(0, 0, 1));
         if (!groundBlock) {
-            this.animation = new animations.MovementAnimation(
+            this.animation = new animations.FallingAnimation(
                 this.pos, map.getUnitRenderPosition(this.pos.sub(0, 0, 1)), 15
             );
             this.pos = this.pos.sub(0, 0, 1);

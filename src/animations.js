@@ -17,3 +17,23 @@ exports.MovementAnimation = function (last, current, length) {
         return step === length;
     };
 };
+
+exports.FallingAnimation = function (last, current, length) {
+    var step = 0;
+
+    this.beforeRendering = function (canvas) {
+        var part = step / (length - 1);
+        canvas.translate3d(current.times(part).add(last.times(1 - part)).sub(current));
+        canvas.rotate(0.1);
+    };
+
+    this.afterRendering = function (canvas) {
+        canvas.rotate(0);
+        canvas.pop();
+        step++;
+    };
+
+    this.hasEnded = function () {
+        return step === length;
+    };
+};
