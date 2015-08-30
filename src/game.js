@@ -39,10 +39,15 @@ var selectedPlaceableIndex = 0;
 
 var tick = 0;
 var score = 0;
+var roleReversalScheduled;
 
 function update() {
     if (mode === MODE_PLAY) {
         if (tick % 15 === 0) {
+            if (roleReversalScheduled) {
+                reverseRoles();
+                roleReversalScheduled = false;
+            }
             units = units.filter(function (unit) {
                 if (unit.life <= 0) {
                     return false;
@@ -158,6 +163,7 @@ document.onkeydown = function (event) {
         mode = mode === MODE_PLAY ? MODE_EDITOR : MODE_PLAY;
         if (mode === MODE_PLAY) {
             score = 0;
+            roleReversalScheduled = false;
             units = unitPositions.map(function (unit) {
                 return unitTypes.createUnit(unit.type, unit.pos.x, unit.pos.y, unit.pos.z);
             });
@@ -168,7 +174,7 @@ document.onkeydown = function (event) {
         console.log('level = "' + level + '"');
     }
     if (key === ' ' && mode === MODE_PLAY) {
-        reverseRoles();
+        roleReversalScheduled = true;
     }
 };
 
