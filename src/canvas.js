@@ -145,6 +145,10 @@ exports.translate = function (x, y) {
 };
 
 exports.translate3d = function (x, y, z) {
+    if (y === undefined) {
+        this.translate3d(x.x, x.y, x.z);
+        return;
+    }
     this.translate((x - y) * 2 * blockSize, (x + y - z * 2) * blockSize);
 };
 

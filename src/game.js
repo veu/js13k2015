@@ -134,7 +134,7 @@ function reverseRoles() {
     var unitMap = {climber: 'fighter', fighter: 'climber', shadow: 'shadow' };
     units = units.map(function (unit) {
         var newUnit = unitTypes.createUnit(unitMap[unit.type], unit.pos.x, unit.pos.y, unit.pos.z);
-        newUnit.last = unit.last;
+        newUnit.animation = unit.animation;
         newUnit.life = unit.life;
         return newUnit;
     });

@@ -78,7 +78,7 @@ exports.Map = function (save) {
         }
 
         if (this.target) {
-            canvas.translate3d(this.target.pos.x, this.target.pos.y, this.target.pos.z);
+            canvas.translate3d(this.target.pos);
             this.target.render(canvas);
             canvas.pop();
         }
@@ -160,6 +160,14 @@ exports.Map = function (save) {
                 return blocks[z][y][x];
             }
         }
+    };
+
+    this.getUnitRenderPosition = function (position) {
+        var ground = this.get(position.sub(0, 0, 1));
+        if (ground && ground.type === 'ramp') {
+            return position.sub(0, 0, 0.5);
+        }
+        return position;
     };
 
     function isReachableNeighbor(a, b, climbing) {
