@@ -1,6 +1,7 @@
 'use strict';
 
 var blockTypes = require('./blocks.js');
+var unitTypes = require('./units.js');
 var Vector = require('./vector.js').Vector;
 
 var TYPE_EMPTY = 0;
@@ -8,12 +9,22 @@ var TYPE_CUBE = 1;
 var TYPE_RAMPX = 2;
 var TYPE_RAMPY = 3;
 
-exports.Map = function (save) {
+var TYPE_CLIMBER = 0;
+var TYPE_FIGHTER = 1;
+var TYPE_SHADOW = 2;
+var unitTypeMap = {
+    climber: TYPE_CLIMBER,
+    fighter: TYPE_FIGHTER,
+    shadow: TYPE_SHADOW
+};
+
+var Map = function (save) {
     var blocks = [];
     var size = new Vector(9, 9, 9);
 
     this.size = size;
     this.target = null;
+    this.units = [];
 
     (function init() {
         save = save && atob(save);
@@ -151,7 +162,11 @@ exports.Map = function (save) {
             compressedBlockTypes += String.fromCharCode(value);
         }
 
-        return btoa(compressedBlockTypes);
+        var strUnits = this.units.map(function(unit) {
+            return '' + [unitTypeMap[unit.type], unit.pos.x, unit.pos.y, unit.pos.z];
+        }, '');
+
+        return [strUnits.join(';'), this.target && this.target.pos || '', btoa(compressedBlockTypes)].join('.');
     };
 
     this.getTopBlockAt = function (x, y) {
@@ -245,3 +260,31 @@ exports.Map = function (save) {
         });
     }
 };
+
+Map.load = function (str) {
+    var parts = str.split('.');
+    var map = new Map(parts[2]);
+
+    if (parts[0]) {
+        var strUnits = parts[0].split(';');
+        map.units = strUnits.map(function (strUnit) {
+            var attributes = strUnit.split(',');
+            if (+attributes[0] === TYPE_CLIMBER) {
+                return new unitTypes.Climber(+attributes[1], +attributes[2], +attributes[3]);
+            }
+            if (+attributes[0] === TYPE_FIGHTER) {
+                return new unitTypes.Fighter(+attributes[1], +attributes[2], +attributes[3]);
+            }
+            return new unitTypes.Shadow(+attributes[1], +attributes[2], +attributes[3]);
+        });
+    }
+
+    if (parts[1]) {
+        var coords = parts[1].split(',');
+        map.target = new blockTypes.Target(+coords[0], +coords[1], +coords[2]);
+    }
+
+    return map;
+};
+
+exports.Map = Map;
