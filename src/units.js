@@ -32,6 +32,9 @@ var Unit = {
             return (this.type === 'shadow') === (unit.type !== 'shadow');
         }, this);
         if (reachableEnemies.length > 0) {
+            reachableEnemies.sort(function (a, b) {
+                return a.life - b.life || a.x - b.x || a.y - b.y;
+            });
             var enemy = reachableEnemies.pop();
             enemy.life -= this.damage;
             return true;
