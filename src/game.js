@@ -169,6 +169,9 @@ document.onkeydown = function (event) {
             });
         }
     }
+    if (key === 'N' && mode === MODE_EDITOR) {
+        selectedPlaceableIndex = (selectedPlaceableIndex + 1) % placeableElements.length;
+    }
     if (key === 'S' && mode === MODE_EDITOR) {
         var level = saveLevel();
         console.log('level = "' + level + '"');
