@@ -1,31 +1,36 @@
 'use strict';
 
 var events = require('./events.js');
-var editor = require('./editor.js');
 var game = require('./game.js');
-var Map = require('./map.js').Map;
 
-var editing = true;
-editor.activate();
+var levels = [
+    "0,3,7,5.3,3,5.AAAAAAAAAAAQAEAAAAEABFAVAAAAAAAAAAAAAEAAAAAAAAAAQAIAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAAAAAAAAAAABAAAAAAAAAAEAAAAAAAAAAAAAFAVAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "1,7,8,2;2,5,6,4.3,2,7.AAAAAAAEABAAQAUAEABABQAQAEAAAAAAABAAQAAAFQBAAAAVAEAAAAEAAAAAQAAAAQBUAAABAFQAAAMAAAAAAAAAAQAEAFABAAQAkAAAAAAAAAAAAAAEABAAQAUAMAAAAAAAAAAAAAAAABAAQAAACQAAAAAAAAAAAAAAAAAAQAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "2,5,5,1;0,8,5,1.0,5,5.AAAAAAAAQFUBVQVUVVVVQFUBAAAAAAAAAAAAVQFUCVAVQJUAVQEAAAAAAAAAAABUAFABQAkAFQBUAAAAAAAAAAAAAAAAQAAAAQAEAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+];
 
-events.on('key-pressed', function (key) {
-    if (key !== 'E') {
-        return;
-    }
-    editing = !editing;
-    if (editing) {
-        game.deactivate();
-        editor.activate();
-    } else {
-        editor.deactivate();
-        game.activate(editor.map);
-    }
+if (window.edit) {
+    var editor = require('./editor.js');
+    var editing = true;
+    editor.activate();
+    events.on('key-pressed', function (key) {
+        if (key !== 'E') {
+            return;
+        }
+        editing = !editing;
+        if (editing) {
+            game.deactivate();
+            editor.activate();
+        } else {
+            editor.deactivate();
+            game.activate(editor.map);
+        }
 
-});
-
-document.onkeydown = function (event) {
-    var key = String.fromCharCode(event.keyCode);
-    events.emit('key-pressed', key);
+    });
+} else {
+    var Map = require('./map.js').Map;
+    var currentLevel = levels[0];
+    game.activate(Map.load(currentLevel));
 }
 
 var fps = 30;
@@ -37,3 +42,8 @@ var fps = 30;
     });
     setTimeout(loop, 1000 / fps);
 })();
+
+document.onkeydown = function (event) {
+    var key = String.fromCharCode(event.keyCode);
+    events.emit('key-pressed', key);
+}

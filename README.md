@@ -2,6 +2,11 @@
 
 Entry for js13kGames 2015
 
+## Installation
+
+Run `npm install` and `gulp build`.
+If all went well `build/index.html` will be the main game and `build/edit.html` a map editor.
+
 ## Controls
 
 Toggle modes with `E`.
@@ -13,7 +18,7 @@ Toggle modes with `E`.
 ### Edit mode
 
 * Place elements by clicking
-* Switch element type to place with the mouse wheel or `N`
+* Switch element type to place with `N`
 * Remove blocks by clicking while holding `shift`
 * Remove units by clicking
 * Move target by placing it somewhere else
