@@ -29,8 +29,21 @@ if (window.edit) {
     });
 } else {
     var Map = require('./map.js').Map;
-    var currentLevel = levels[0];
-    game.activate(Map.load(currentLevel));
+    var currentLevel = 0;
+    events.on('level-won', function () {
+        game.deactivate();
+        if (currentLevel === levels.length) {
+            alert('fin');
+            return;
+        }
+        currentLevel ++;
+        game.activate(Map.load(levels[currentLevel]))
+    });
+    events.on('level-lost', function () {
+        game.deactivate();
+        game.activate(Map.load(levels[currentLevel]))
+    });
+    game.activate(Map.load(levels[currentLevel]));
 }
 
 var fps = 30;

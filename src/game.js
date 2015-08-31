@@ -5,11 +5,11 @@ var events = require('./events.js');
 var canvas = require('./canvas.js');
 var unitTypes = require('./units.js');
 
-var active = false;
 var map;
 var units = [];
 var tick;
 var score;
+var targetScore = 1;
 var roleReversalScheduled;
 
 function update() {
@@ -29,6 +29,7 @@ function update() {
         }
         if (map.target && unit.pos.equals(map.target.pos)) {
             score ++;
+            events.emit('level-won');
             return false;
         }
         return true;
@@ -39,11 +40,14 @@ function update() {
     units.forEach(function (unit) {
         unit.move(map, units);
     });
+    if (units.length === 0 && score < targetScore) {
+        events.emit('level-lost');
+    }
 }
 
 function render() {
     canvas.drawBackground();
-    canvas.drawText('score: ' + score, 10, 20);
+    canvas.drawText(score + ' / ' + targetScore, 10, 20);
     canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 180);
     map.render(canvas);
 
@@ -84,7 +88,6 @@ function onKeyPressed(key) {
 
 exports.activate = function (newMap) {
     map = newMap;
-    active = true;
     tick = 0;
     score = 0;
     roleReversalScheduled = false;
@@ -97,7 +100,6 @@ exports.activate = function (newMap) {
 };
 
 exports.deactivate = function () {
-    active = false;
     events.off('key-pressed', onKeyPressed);
     events.off('update', update);
     events.off('render', render);
