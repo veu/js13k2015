@@ -20,7 +20,6 @@ exports.emit = function (name, data) {
     if (!listeners[name]) {
         return;
     }
-    console.log('emitting ' + name + ' with ' + listeners[name].length + ' listeners');
     listeners[name].forEach(function (listener) {
         listener(data);
     });
