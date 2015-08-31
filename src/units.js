@@ -35,8 +35,7 @@ var Unit = {
             reachableEnemies.sort(function (a, b) {
                 return a.life - b.life || a.x - b.x || a.y - b.y;
             });
-            var enemy = reachableEnemies.pop();
-            enemy.life -= this.damage;
+            reachableEnemies.pop().damageTaken += this.damage;
             return true;
         }
         return false;
@@ -48,6 +47,7 @@ exports.Fighter = function (x, y, z) {
     this.type = 'fighter';
     this.life = this.maxLife = config.fighter.life;
     this.damage = config.fighter.damage;
+    this.damageTaken = 0;
 
     this.attack = Unit.attack;
 
@@ -59,7 +59,7 @@ exports.Fighter = function (x, y, z) {
             );
             this.pos = this.pos.sub(0, 0, 1);
             if (map.get(this.pos.sub(0, 0, 1))) {
-                this.life -= config.fighter.fallDamage;
+                this.damageTaken += config.fighter.fallDamage;
             }
             return;
         }
@@ -123,6 +123,7 @@ exports.Climber = function (x, y, z) {
     this.type = 'climber';
     this.life = this.maxLife = config.climber.life;
     this.damage = config.climber.damage;
+    this.damageTaken = 0;
 
     this.attack = Unit.attack;
 
@@ -182,6 +183,7 @@ exports.Shadow = function (x, y, z) {
     this.type = 'shadow';
     this.life = this.maxLife = config.shadow.life;
     this.damage = config.shadow.damage;
+    this.damageTaken = 0;
 
     this.attack = Unit.attack;
 

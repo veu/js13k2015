@@ -20,6 +20,11 @@ function update() {
         reverseRoles();
         roleReversalScheduled = false;
     }
+    units.forEach(function (unit) {
+        unit.life -= unit.damageTaken;
+        unit.life = Math.max(unit.life, 0);
+        unit.damageTaken = 0;
+    });
     units = units.filter(function (unit) {
         if (unit.life <= 0) {
             return false;
