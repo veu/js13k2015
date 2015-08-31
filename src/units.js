@@ -43,7 +43,7 @@ var Unit = {
 exports.Fighter = function (x, y, z) {
     this.pos = new Vector(x, y, z);
     this.type = 'fighter';
-    this.life = config.fighter.life;
+    this.life = this.maxLife = config.fighter.life;
     this.damage = config.fighter.damage;
 
     this.attack = Unit.attack;
@@ -96,10 +96,15 @@ exports.Fighter = function (x, y, z) {
         if (this.animation) {
             this.animation.beforeRendering(canvas);
         }
-        canvas.drawPolygon('#ee3796', [-6,5, 6,5, 6,25, -6,25], new UnitContext(this));
-        canvas.drawPolygon('#db0087', [-6,5, 6,25, -6,25], new UnitContext(this));
-        canvas.drawPolygon('#000', [-2,8, -2,11, -4,11, -4,8]);
-        canvas.drawPolygon('#000', [2,8, 2,11, 4,11, 4,8]);
+        canvas.drawPolygon('rgba(141,164,182,0.5)', [-5,6, 5,6, 5,25, -5,25], new UnitContext(this));
+        canvas.drawPolygon('#46515a', [-6,5, 6,5, 6,6, -6,6]);
+        canvas.drawPolygon('#46515a', [6,5, 6,25, 5,25, 5,5]);
+        canvas.drawPolygon('#46515a', [-6,5, -6,25, -5,25, -5,5]);
+        var partLife = this.life / this.maxLife;
+        canvas.drawPolygon('#ee3796', [-5,25-19*partLife, 5,25-19*partLife, 5,25, -5,25]);
+        canvas.drawPolygon('#db0087', [-5,25-15*partLife, 5,25, -5,25]);
+        canvas.drawPolygon('#000', [-1,8, -1,11, -2,11, -2,8]);
+        canvas.drawPolygon('#000', [2,8, 2,11, 3,11, 3,8]);
         if (this.animation) {
             this.animation.afterRendering(canvas);
             if (this.animation.hasEnded()) {
@@ -113,7 +118,7 @@ exports.Fighter = function (x, y, z) {
 exports.Climber = function (x, y, z) {
     this.pos = new Vector(x, y, z);
     this.type = 'climber';
-    this.life = config.climber.life;
+    this.life = this.maxLife = config.climber.life;
     this.damage = config.climber.damage;
 
     this.attack = Unit.attack;
@@ -150,10 +155,15 @@ exports.Climber = function (x, y, z) {
         if (this.animation) {
             this.animation.beforeRendering(canvas);
         }
-        canvas.drawPolygon('#11c869', [-6,5, 6,5, 6,25, -6,25], new UnitContext(this));
-        canvas.drawPolygon('#24ff78', [-6,5, 6,25, -6,25], new UnitContext(this));
-        canvas.drawPolygon('#000', [-2,8, -2,11, -4,11, -4,8]);
-        canvas.drawPolygon('#000', [2,8, 2,11, 4,11, 4,8]);
+        canvas.drawPolygon('rgba(141,164,182,0.5)', [-5,6, 5,6, 5,25, -5,25], new UnitContext(this));
+        canvas.drawPolygon('#46515a', [-6,5, 6,5, 6,6, -6,6]);
+        canvas.drawPolygon('#46515a', [6,5, 6,25, 5,25, 5,5]);
+        canvas.drawPolygon('#46515a', [-6,5, -6,25, -5,25, -5,5]);
+        var partLife = this.life / this.maxLife;
+        canvas.drawPolygon('#24ff78', [-5,25-19*partLife, 5,25-19*partLife, 5,25, -5,25]);
+        canvas.drawPolygon('#11c869', [-5,25-15*partLife, 5,25, -5,25]);
+        canvas.drawPolygon('#000', [-1,8, -1,11, -2,11, -2,8]);
+        canvas.drawPolygon('#000', [2,8, 2,11, 3,11, 3,8]);
         if (this.animation) {
             this.animation.afterRendering(canvas);
             if (this.animation.hasEnded()) {
@@ -167,7 +177,7 @@ exports.Climber = function (x, y, z) {
 exports.Shadow = function (x, y, z) {
     this.pos = new Vector(x, y, z);
     this.type = 'shadow';
-    this.life = config.shadow.life;
+    this.life = this.maxLife = config.shadow.life;
     this.damage = config.shadow.damage;
 
     this.attack = Unit.attack;
@@ -183,10 +193,14 @@ exports.Shadow = function (x, y, z) {
         if (this.animation) {
             this.animation.beforeRendering(canvas);
         }
-        canvas.drawPolygon('#3a0033', [-6,5, 6,5, 6,25, -6,25], new UnitContext(this));
-        canvas.drawPolygon('#4a1144', [-6,5, 6,25, -6,25], new UnitContext(this));
-        canvas.drawPolygon('#6f7', [-2,8, -2,11, -4,11, -4,8]);
-        canvas.drawPolygon('#6f7', [2,8, 2,11, 4,11, 4,8]);
+        canvas.drawPolygon('rgba(141,164,182,0.5)', [-5,6, 5,6, 5,25, -5,25], new UnitContext(this));
+        canvas.drawPolygon('#46515a', [-6,5, 6,5, 6,6, -6,6]);
+        canvas.drawPolygon('#46515a', [6,5, 6,25, 5,25, 5,5]);
+        canvas.drawPolygon('#46515a', [-6,5, -6,25, -5,25, -5,5]);
+        var partLife = this.life / this.maxLife;
+        canvas.drawPolygon('#3a0033', [-5,25-19*partLife, 5,25-19*partLife, 5,25, -5,25]);
+        canvas.drawPolygon('#850075', [-1,8, -1,11, -2,11, -2,8]);
+        canvas.drawPolygon('#850075', [2,8, 2,11, 3,11, 3,8]);
         if (this.animation) {
             this.animation.afterRendering(canvas);
             if (this.animation.hasEnded()) {
