@@ -18,7 +18,7 @@ events.on('key-pressed', function (key) {
         editor.activate();
     } else {
         editor.deactivate();
-        game.activate(editor.map, editor.unitPositions);
+        game.activate(editor.map);
     }
 
 });

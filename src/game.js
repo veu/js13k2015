@@ -82,13 +82,13 @@ function onKeyPressed(key) {
     }
 }
 
-exports.activate = function (newMap, unitPositions) {
+exports.activate = function (newMap) {
     map = newMap;
     active = true;
     tick = 0;
     score = 0;
     roleReversalScheduled = false;
-    units = unitPositions.map(function (unit) {
+    units = map.units.map(function (unit) {
         return unitTypes.createUnit(unit.type, unit.pos.x, unit.pos.y, unit.pos.z);
     });
     events.on('key-pressed', onKeyPressed);

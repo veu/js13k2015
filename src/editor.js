@@ -29,7 +29,7 @@ var unitTypeMap = {
 };
 
 var map = new Map();
-var unitPositions = [];
+map.units = [];
 
 function onKeyPressed(key) {
     if (key === 'N') {
@@ -42,7 +42,7 @@ function onKeyPressed(key) {
 }
 
 function saveLevel() {
-    var strUnits = unitPositions.map(function(unit) {
+    var strUnits = map.units.map(function(unit) {
         return '' + [unitTypeMap[unit.type], unit.pos.x, unit.pos.y, unit.pos.z];
     }, '');
 
@@ -83,7 +83,7 @@ function render() {
     renderEditHelpers();
     map.render(canvas);
 
-    var orderedUnits = unitPositions.slice();
+    var orderedUnits = map.units.slice();
     orderedUnits.sort(function (a, b) {
         return (a.pos.x - b.pos.x) + (a.pos.y - b.pos.y);
     });
@@ -103,9 +103,12 @@ function update() {
 
 function loadLevel(level) {
     level = level.split('.');
+
+    map = new Map(level[2]);
+
     if (level[0]) {
         var strUnits = level[0].split(';');
-        unitPositions = strUnits.map(function (strUnit) {
+        map.units = strUnits.map(function (strUnit) {
             var attributes = strUnit.split(',');
             if (+attributes[0] === TYPE_CLIMBER) {
                 return new unitTypes.Climber(+attributes[1], +attributes[2], +attributes[3]);
@@ -117,8 +120,6 @@ function loadLevel(level) {
         });
     }
 
-    map = new Map(level[2]);
-
     if (level[1]) {
         var coords = level[1].split(',');
         map.target = new blockTypes.Target(+coords[0], +coords[1], +coords[2]);
@@ -127,7 +128,7 @@ function loadLevel(level) {
 
 function onCanvasClicked(context) {
     if (context.type === 'unit') {
-        unitPositions = unitPositions.filter(function (unit) {
+        map.units = map.units.filter(function (unit) {
             return !unit.pos.equals(context.unit.pos);
         });
         return;
@@ -149,7 +150,7 @@ function onCanvasClicked(context) {
         return;
     }
 
-    var spotTaken = unitPositions.some(function (unit) {
+    var spotTaken = map.units.some(function (unit) {
         return unit.x === x && unit.y === y && unit.z === z;
     });
     if (spotTaken) {
@@ -163,7 +164,7 @@ function onCanvasClicked(context) {
     } else if (element.type === 'target') {
         map.target = new blockTypes.Target(x, y, z);
     } else if (['fighter', 'climber', 'shadow'].indexOf(element.type) >= 0) {
-        unitPositions.push(unitTypes.createUnit(element.type, x, y, z));
+        map.units.push(unitTypes.createUnit(element.type, x, y, z));
     }
 };
 
@@ -176,7 +177,6 @@ exports.activate = function () {
 
 exports.deactivate = function () {
     exports.map = map;
-    exports.unitPositions = unitPositions;
     events.off('key-pressed', onKeyPressed);
     events.off('update', update);
     events.off('render', render);
