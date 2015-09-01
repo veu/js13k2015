@@ -1,7 +1,8 @@
 'use strict';
 
-exports.MovementAnimation = function (last, current, length) {
+exports.MovementAnimation = function (last, current) {
     var step = 0;
+    var length = 16;
 
     this.beforeRendering = function (canvas) {
         var part = step / (length - 1);
@@ -18,8 +19,9 @@ exports.MovementAnimation = function (last, current, length) {
     };
 };
 
-exports.FallingAnimation = function (last, current, length) {
+exports.FallingAnimation = function (last, current) {
     var step = 0;
+    var length = 8;
 
     this.beforeRendering = function (canvas) {
         var part = step / (length - 1);
@@ -38,8 +40,9 @@ exports.FallingAnimation = function (last, current, length) {
     };
 };
 
-exports.FightingAnimation = function (length) {
+exports.FightingAnimation = function () {
     var step = 0;
+    var length = 16;
 
     this.beforeRendering = function (canvas) {
         canvas.translate(0, -Math.pow(7 - Math.abs(7 - step), 2) / 8);

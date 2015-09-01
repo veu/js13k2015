@@ -13,7 +13,11 @@ var targetScore = 1;
 var roleReversalScheduled;
 
 function update() {
-    if (tick % 15 !== 0) {
+    if (tick % 16 === 8) {
+        updateFallingUnits();
+        return;
+    }
+    if (tick % 16 !== 0) {
         return;
     }
     if (roleReversalScheduled) {
@@ -48,6 +52,17 @@ function update() {
     if (units.length === 0 && score < targetScore) {
         events.emit('level-lost');
     }
+}
+
+function updateFallingUnits() {
+    units.forEach(function (unit) {
+        if (unit.falling) {
+            unit.life = Math.max(unit.life - config.fighter.fallDamage, 0);
+            if (map.get(unit.pos.sub(0, 0, 1))) {
+                unit.falling = false;
+            }
+        }
+    });
 }
 
 function render() {

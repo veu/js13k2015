@@ -48,6 +48,7 @@ exports.Fighter = function (x, y, z) {
     this.life = this.maxLife = config.fighter.life;
     this.damage = config.fighter.damage;
     this.damageTaken = 0;
+    this.falling = false;
 
     this.attack = Unit.attack;
 
@@ -55,16 +56,14 @@ exports.Fighter = function (x, y, z) {
         var groundBlock = map.get(this.pos.sub(0, 0, 1));
         if (!groundBlock) {
             this.animation = new animations.FallingAnimation(
-                this.pos, map.getUnitRenderPosition(this.pos.sub(0, 0, 1)), 15
+                this.pos, map.getUnitRenderPosition(this.pos.sub(0, 0, 1))
             );
             this.pos = this.pos.sub(0, 0, 1);
-            if (map.get(this.pos.sub(0, 0, 1))) {
-                this.damageTaken += config.fighter.fallDamage;
-            }
+            this.falling = true;
             return;
         }
         if (this.attack(map, units)) {
-            this.animation = new animations.FightingAnimation(15);
+            this.animation = new animations.FightingAnimation();
             return;
         }
         if (!map.target || this.pos.equals(map.target.pos)) {
@@ -89,7 +88,7 @@ exports.Fighter = function (x, y, z) {
         }
 
         this.animation = new animations.MovementAnimation(
-            map.getUnitRenderPosition(this.pos), map.getUnitRenderPosition(newPos), 15
+            map.getUnitRenderPosition(this.pos), map.getUnitRenderPosition(newPos)
         );
         this.pos = newPos;
     };
@@ -129,7 +128,7 @@ exports.Climber = function (x, y, z) {
 
     this.move = function (map, units) {
         if (this.attack(map, units)) {
-            this.animation = new animations.FightingAnimation(15);
+            this.animation = new animations.FightingAnimation();
             return;
         }
         if (!map.target || this.pos.equals(map.target.pos)) {
@@ -149,7 +148,7 @@ exports.Climber = function (x, y, z) {
         }
 
         this.animation = new animations.MovementAnimation(
-            map.getUnitRenderPosition(this.pos), map.getUnitRenderPosition(newPos), 15
+            map.getUnitRenderPosition(this.pos), map.getUnitRenderPosition(newPos)
         );
         this.pos = newPos;
     };
@@ -189,7 +188,7 @@ exports.Shadow = function (x, y, z) {
 
     this.move = function (map, units) {
         if (this.attack(map, units)) {
-            this.animation = new animations.FightingAnimation(15);
+            this.animation = new animations.FightingAnimation();
         }
     };
 
