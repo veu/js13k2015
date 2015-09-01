@@ -34,8 +34,10 @@ var Map = function (save) {
                 blocks[z][y] = [];
                 for (var x = size.x; x--;) {
                     blocks[z][y][x] = null;
-                    if (save) {
-                        var index = (z * size.y + y) * size.x + x;
+                    if (z == 0) {
+                        blocks[z][y][x] = new blockTypes.Cube(x, y, z);
+                    } else if (save) {
+                        var index = ((z - 1) * size.y + y) * size.x + x;
                         var type = (save.charCodeAt(index >> 2) >> ((index % 4) * 2)) & 3;
                         if (type === TYPE_CUBE) {
                             blocks[z][y][x] = new blockTypes.Cube(x, y, z);
@@ -44,8 +46,6 @@ var Map = function (save) {
                         } else if (type === TYPE_RAMPY) {
                             blocks[z][y][x] = new blockTypes.Ramp(x, y, z, 'y');
                         }
-                    } else if (z == 0) {
-                        blocks[z][y][x] = new blockTypes.Cube(x, y, z);
                     }
                 }
             }
@@ -136,6 +136,9 @@ var Map = function (save) {
     this.toString = function() {
         var blockTypes = [];
         for (var z in blocks) {
+            if (+z === 0) {
+                continue;
+            }
             for (var y in blocks[z]) {
                 for (var x in blocks[z][y]) {
                     var type = TYPE_EMPTY;
