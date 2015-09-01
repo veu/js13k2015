@@ -208,11 +208,11 @@ var Map = function (save) {
         if (aGround && bGround) {
             // cube to ramp
             if (aGround.type === 'cube' && bGround.type === 'ramp')  {
-                return dir === bGround.dir;
+                return aGround[dir] > bGround[dir] ?  a.z < b.z : a.z === b.z;
             }
             // ramp to cube
-            if (aGround.type === 'ramp' && bGround.type === 'cube')  {
-                return dir === aGround.dir;
+            if (aGround.type === 'ramp' && bGround.type === 'cube' && dir === aGround.dir)  {
+                return aGround[dir] < bGround[dir] ?  a.z > b.z : a.z === b.z;
             }
             // ramp to ramp
             if (aGround.type === 'ramp' && bGround.type === 'ramp')  {
