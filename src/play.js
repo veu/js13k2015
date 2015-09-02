@@ -6,27 +6,45 @@ var game = require('./game.js');
 exports.start = function () {
 
     var levels = [
-        "0,3,7,5.3,3,5.AAAAAAAAAAAQAEAAAAEABFAVAAAAAAAAAAAAAEAAAAAAAAAAQAIAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAAAAAAAAAAABAAAAAAAAAAEAAAAAAAAAAAAAFAVAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "1,7,8,2;2,5,6,4.3,2,7.AAAAAAAEABAAQAUAEABABQAQAEAAAAAAABAAQAAAFQBAAAAVAEAAAAEAAAAAQAAAAQBUAAABAFQAAAMAAAAAAAAAAQAEAFABAAQAkAAAAAAAAAAAAAAEABAAQAUAMAAAAAAAAAAAAAAAABAAQAAACQAAAAAAAAAAAAAAAAAAQAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "2,5,5,1;0,8,5,1.0,5,5.AAAAAAAAQFUBVQVUVVVVQFUBAAAAAAAAAAAAVQFUCVAVQJUAVQEAAAAAAAAAAABUAFABQAkAFQBUAAAAAAAAAAAAAAAAQAAAAQAEAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        {
+            map: "1,7,7,1.2,2,3.VQFUBVAlQFUAdQEAAAAAAAAAAAAAAEAFABUAVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            events: [
+                {
+                    type: 'start',
+                    msg: [
+                        "Hi there, I'm glad you could join us but there isn't anything for you to do right now.",
+                        "Our tiny friend is perfectly capable of reaching the goal all by itself."
+                    ]
+                },
+                {
+                    type: 'at',
+                    pos: {x: 4, y: 2, z: 2},
+                    unit: 0,
+                    msg: [
+                        "...apart from the fact that it can't climb walls in its current form.",
+                        "Mind pressing space to help it out?"
+                    ]
+                }
+            ]
+        }
     ];
 
     var Map = require('./map.js').Map;
     var currentLevel = 0;
     events.on('level-won', function () {
         game.deactivate();
+        currentLevel++;
         if (currentLevel === levels.length) {
             alert('fin');
             return;
         }
-        currentLevel ++;
-        game.activate(Map.load(levels[currentLevel]))
+        game.activate(Map.load(levels[currentLevel].map), levels[currentLevel].events)
     });
     events.on('level-lost', function () {
         game.deactivate();
-        game.activate(Map.load(levels[currentLevel]))
+        game.activate(Map.load(levels[currentLevel].map), levels[currentLevel].events);
     });
-    game.activate(Map.load(levels[currentLevel]));
+    game.activate(Map.load(levels[currentLevel].map), levels[currentLevel].events);
 
     var fps = 30;
 

@@ -151,8 +151,9 @@ exports.drawPolygon3d = function (color, points, data) {
     this.drawPolygon(color, points2d, data);
 };
 
-exports.drawText = function (text, x, y) {
+exports.drawText = function (text, x, y, align) {
     ctx.fillStyle = '#ccc';
+    ctx.textAlign = align || 'left';
     ctx.fillText(text, currentTranslation.x + x, currentTranslation.y + y);
 };
 

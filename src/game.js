@@ -6,20 +6,28 @@ var canvas = require('./canvas.js');
 var unitTypes = require('./units.js');
 
 var map;
+var mapEvents;
+var currentEvent;
 var units = [];
 var tick;
 var score;
 var targetScore = 1;
 var roleReversalScheduled;
+var message;
 
 function update() {
+    if (message) {
+        return;
+    }
     if (tick % 16 === 8) {
+        checkEvents();
         updateFallingUnits();
         return;
     }
     if (tick % 16 !== 0) {
         return;
     }
+    checkEvents();
     if (roleReversalScheduled) {
         reverseRoles();
         roleReversalScheduled = false;
@@ -54,6 +62,30 @@ function update() {
     }
 }
 
+function checkEvents() {
+    if (currentEvent >= mapEvents.length) {
+        return;
+    }
+
+    if (mapEvents[currentEvent].type === 'start') {
+        message = mapEvents[currentEvent].msg;
+        currentEvent++;
+        return;
+    }
+
+    if (mapEvents[currentEvent].type === 'at') {
+        units.some(function (unit) {
+            if (unit.pos.equals(mapEvents[currentEvent].pos)) {
+                message = mapEvents[currentEvent].msg;
+                currentEvent++;
+                return true;
+            }
+            return false;
+        });
+        return;
+    }
+};
+
 function updateFallingUnits() {
     units.forEach(function (unit) {
         if (unit.falling) {
@@ -81,6 +113,15 @@ function render() {
 
     canvas.pop();
 
+    if (message) {
+        var offset = 0;
+        message.forEach(function (part) {
+            canvas.drawText(part, canvas.getWidth() / 2, 70 + offset, 'center');
+            offset += 14;
+        });
+        canvas.drawText('[Press space to continue]', canvas.getWidth() / 2, 80 + offset, 'center');
+    }
+
     tick++;
 }
 
@@ -102,12 +143,18 @@ function isUnitWithLowestLifeAtPosition(unit) {
 
 function onKeyPressed(key) {
     if (key === ' ') {
-        roleReversalScheduled = true;
+        if (message) {
+            message = false;
+        } else {
+            roleReversalScheduled = true;
+        }
     }
 }
 
-exports.activate = function (newMap) {
+exports.activate = function (newMap, newEvents) {
     map = newMap;
+    mapEvents = newEvents;
+    currentEvent = 0;
     tick = 0;
     score = 0;
     roleReversalScheduled = false;
@@ -117,6 +164,8 @@ exports.activate = function (newMap) {
     events.on('key-pressed', onKeyPressed);
     events.on('update', update);
     events.on('render', render);
+
+    checkEvents();
 };
 
 exports.deactivate = function () {
