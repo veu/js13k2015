@@ -2,14 +2,14 @@
 
 var events = require('./events.js');
 
-var width = 640;
-var height = 360;
+var width = 1200;
+var height = 900;
 
 var scale = 1;
 var offsetX = 0;
 var offsetY = 0;
 
-var blockSize = 8;
+var blockSize = 16;
 
 var canvas = document.createElement('canvas');
 var ctx = canvas.getContext('2d');
@@ -44,40 +44,40 @@ function getGradient(face) {
     switch (face) {
         case 'x':
             gradient = ctx.createRadialGradient(
-                width / 2 + 140 - currentTranslation.x, height / 2 + 90 - currentTranslation.y, 200,
-                width / 2 + 140 - currentTranslation.x, height / 2 + 90 - currentTranslation.y, 60
+                width / 2 + 280 - currentTranslation.x, height / 2 + 180 - currentTranslation.y, 400,
+                width / 2 + 280 - currentTranslation.x, height / 2 + 180 - currentTranslation.y, 120
             );
             gradient.addColorStop(0, '#f5e7d3');
             gradient.addColorStop(1, '#dfd2c0');
             return gradient;
         case 'xz':
             gradient = ctx.createRadialGradient(
-                width / 2 + 140 - currentTranslation.x, height / 2 - 90 - currentTranslation.y, 200,
-                width / 2 + 140 - currentTranslation.x, height / 2 - 90 - currentTranslation.y, 60
+                width / 2 + 340 - currentTranslation.x, height / 2 - 100 - currentTranslation.y, 400,
+                width / 2 + 340 - currentTranslation.x, height / 2 - 100 - currentTranslation.y, 120
             );
             gradient.addColorStop(0, '#f9f2dc');
             gradient.addColorStop(1, '#efe8d7');
             return gradient;
         case 'y':
             gradient = ctx.createRadialGradient(
-                width / 2 - 140 - currentTranslation.x, height / 2 + 90 - currentTranslation.y, 200,
-                width / 2 - 140 - currentTranslation.x, height / 2 + 90 - currentTranslation.y, 60
+                width / 2 - 280 - currentTranslation.x, height / 2 + 180 - currentTranslation.y, 400,
+                width / 2 - 280 - currentTranslation.x, height / 2 + 180 - currentTranslation.y, 120
             );
             gradient.addColorStop(0, '#d9cbc4');
             gradient.addColorStop(1, '#c4b8b1');
             return gradient;
         case 'yz':
             gradient = ctx.createRadialGradient(
-                width / 2 - 140 - currentTranslation.x, height / 2 - 90 - currentTranslation.y, 200,
-                width / 2 - 140 - currentTranslation.x, height / 2 - 90 - currentTranslation.y, 60
+                width / 2 - 340 - currentTranslation.x, height / 2 - 100 - currentTranslation.y, 400,
+                width / 2 - 340 - currentTranslation.x, height / 2 - 100 - currentTranslation.y, 120
             );
             gradient.addColorStop(0, '#ebe4d5');
             gradient.addColorStop(1, '#d1dbd0');
             return gradient;
         case 'z':
             gradient = ctx.createRadialGradient(
-                width / 2 - currentTranslation.x, height / 2 - 180 - currentTranslation.y, 140,
-                width / 2 - currentTranslation.x, height / 2 - 180 - currentTranslation.y, 200
+                width / 2 - currentTranslation.x, height / 2 - 200 - currentTranslation.y, 140,
+                width / 2 - currentTranslation.x, height / 2 - 200 - currentTranslation.y, 200
             );
             gradient.addColorStop(0, '#fefee6');
             gradient.addColorStop(1, '#ffffef');
@@ -151,9 +151,10 @@ exports.drawPolygon3d = function (color, points, data) {
     this.drawPolygon(color, points2d, data);
 };
 
-exports.drawText = function (text, x, y, align) {
+exports.drawText = function (text, x, y, size) {
+    ctx.font = (size || 24) + 'px Trebuchet MS, Helvetica, sans-serif';
     ctx.fillStyle = '#ccc';
-    ctx.textAlign = align || 'left';
+    ctx.textAlign = 'center';
     ctx.fillText(text, currentTranslation.x + x, currentTranslation.y + y);
 };
 

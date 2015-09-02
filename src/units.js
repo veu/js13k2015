@@ -39,6 +39,28 @@ var Unit = {
             return true;
         }
         return false;
+    },
+    render: function (canvas, map, colors) {
+        canvas.translate3d(map.getUnitRenderPosition(this.pos));
+        if (this.animation) {
+            this.animation.beforeRendering(canvas);
+        }
+        canvas.drawPolygon('rgba(141,164,182,0.5)', [-10,12, 10,12, 10,50, -10,50], new UnitContext(this));
+        canvas.drawPolygon('#46515a', [-12,10, 12,10, 12,12, -12,12]);
+        canvas.drawPolygon('#46515a', [12,10, 12,50, 10,50, 10,10]);
+        canvas.drawPolygon('#46515a', [-12,10, -12,50, -10,50, -10,10]);
+        var partLife = this.life / this.maxLife;
+        canvas.drawPolygon(colors[0], [-10,50-38*partLife, 10,50-38*partLife, 10,50, -10,50]);
+        canvas.drawPolygon(colors[1], [-10,50-30*partLife, 10,50, -10,50]);
+        canvas.drawPolygon(colors[2], [-2,16, -2,22, -4,22, -4,16]);
+        canvas.drawPolygon(colors[2], [4,16, 4,22, 6,22, 6,16]);
+        if (this.animation) {
+            this.animation.afterRendering(canvas);
+            if (this.animation.hasEnded()) {
+                this.animation = null;
+            }
+        }
+        canvas.pop();
     }
 };
 
@@ -94,26 +116,7 @@ exports.Fighter = function (x, y, z) {
     };
 
     this.render = function (canvas, map, tick) {
-        canvas.translate3d(map.getUnitRenderPosition(this.pos));
-        if (this.animation) {
-            this.animation.beforeRendering(canvas);
-        }
-        canvas.drawPolygon('rgba(141,164,182,0.5)', [-5,6, 5,6, 5,25, -5,25], new UnitContext(this));
-        canvas.drawPolygon('#46515a', [-6,5, 6,5, 6,6, -6,6]);
-        canvas.drawPolygon('#46515a', [6,5, 6,25, 5,25, 5,5]);
-        canvas.drawPolygon('#46515a', [-6,5, -6,25, -5,25, -5,5]);
-        var partLife = this.life / this.maxLife;
-        canvas.drawPolygon('#ee3796', [-5,25-19*partLife, 5,25-19*partLife, 5,25, -5,25]);
-        canvas.drawPolygon('#db0087', [-5,25-15*partLife, 5,25, -5,25]);
-        canvas.drawPolygon('#000', [-1,8, -1,11, -2,11, -2,8]);
-        canvas.drawPolygon('#000', [2,8, 2,11, 3,11, 3,8]);
-        if (this.animation) {
-            this.animation.afterRendering(canvas);
-            if (this.animation.hasEnded()) {
-                this.animation = null;
-            }
-        }
-        canvas.pop();
+        Unit.render.call(this, canvas, map, ['#ee3796', '#db0087', '#000']);
     };
 };
 
@@ -153,27 +156,8 @@ exports.Climber = function (x, y, z) {
         this.pos = newPos;
     };
 
-    this.render = function (canvas, map, tick) {
-        canvas.translate3d(map.getUnitRenderPosition(this.pos));
-        if (this.animation) {
-            this.animation.beforeRendering(canvas);
-        }
-        canvas.drawPolygon('rgba(141,164,182,0.5)', [-5,6, 5,6, 5,25, -5,25], new UnitContext(this));
-        canvas.drawPolygon('#46515a', [-6,5, 6,5, 6,6, -6,6]);
-        canvas.drawPolygon('#46515a', [6,5, 6,25, 5,25, 5,5]);
-        canvas.drawPolygon('#46515a', [-6,5, -6,25, -5,25, -5,5]);
-        var partLife = this.life / this.maxLife;
-        canvas.drawPolygon('#24ff78', [-5,25-19*partLife, 5,25-19*partLife, 5,25, -5,25]);
-        canvas.drawPolygon('#11c869', [-5,25-15*partLife, 5,25, -5,25]);
-        canvas.drawPolygon('#000', [-1,8, -1,11, -2,11, -2,8]);
-        canvas.drawPolygon('#000', [2,8, 2,11, 3,11, 3,8]);
-        if (this.animation) {
-            this.animation.afterRendering(canvas);
-            if (this.animation.hasEnded()) {
-                this.animation = null;
-            }
-        }
-        canvas.pop();
+    this.render = function (canvas, map) {
+        Unit.render.call(this, canvas, map, ['#24ff78', '#11c869', '#000']);
     };
 };
 
@@ -193,25 +177,7 @@ exports.Shadow = function (x, y, z) {
     };
 
     this.render = function (canvas, map, tick) {
-        canvas.translate3d(map.getUnitRenderPosition(this.pos));
-        if (this.animation) {
-            this.animation.beforeRendering(canvas);
-        }
-        canvas.drawPolygon('rgba(141,164,182,0.5)', [-5,6, 5,6, 5,25, -5,25], new UnitContext(this));
-        canvas.drawPolygon('#46515a', [-6,5, 6,5, 6,6, -6,6]);
-        canvas.drawPolygon('#46515a', [6,5, 6,25, 5,25, 5,5]);
-        canvas.drawPolygon('#46515a', [-6,5, -6,25, -5,25, -5,5]);
-        var partLife = this.life / this.maxLife;
-        canvas.drawPolygon('#3a0033', [-5,25-19*partLife, 5,25-19*partLife, 5,25, -5,25]);
-        canvas.drawPolygon('#850075', [-1,8, -1,11, -2,11, -2,8]);
-        canvas.drawPolygon('#850075', [2,8, 2,11, 3,11, 3,8]);
-        if (this.animation) {
-            this.animation.afterRendering(canvas);
-            if (this.animation.hasEnded()) {
-                this.animation = null;
-            }
-        }
-        canvas.pop();
+        Unit.render.call(this, canvas, map, ['#3a0033', '#3a0033', '#850075']);
     };
 };
 

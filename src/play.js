@@ -12,7 +12,7 @@ exports.start = function () {
                 {
                     type: 'start',
                     msg: [
-                        "Hi there, I'm glad you could join us but there isn't anything for you to do right now.",
+                        "Hi there, I’m glad you could join us but there isn’t anything for you to do right now.",
                         "Our tiny friend is perfectly capable of reaching the goal all by itself."
                     ]
                 },
@@ -21,7 +21,7 @@ exports.start = function () {
                     pos: {x: 4, y: 2, z: 2},
                     unit: 0,
                     msg: [
-                        "...apart from the fact that it can't climb walls in its current form.",
+                        "...apart from the fact that it can’t climb walls in its current form.",
                         "Mind pressing space to help it out?"
                     ]
                 }

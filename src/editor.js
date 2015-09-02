@@ -55,11 +55,11 @@ function renderEditHelpers() {
 
 function render() {
     canvas.drawBackground();
-    canvas.drawText('edit mode', 10, 20);
-    canvas.translate(35, 30);
+    canvas.drawText('edit mode', 80, 30);
+    canvas.translate(80, 50);
     placeableElements[selectedPlaceableIndex].render(canvas, map);
     canvas.pop();
-    canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 180);
+    canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 360);
     renderEditHelpers();
     map.render(canvas);
 

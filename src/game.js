@@ -10,10 +10,9 @@ var mapEvents;
 var currentEvent;
 var units = [];
 var tick;
-var score;
-var targetScore = 1;
 var roleReversalScheduled;
 var message;
+var levelState;
 
 function update() {
     if (message) {
@@ -45,8 +44,8 @@ function update() {
             return false;
         }
         if (map.target && unit.pos.equals(map.target.pos)) {
-            score ++;
             events.emit('level-won');
+            levelState = 'won';
             return false;
         }
         return true;
@@ -57,13 +56,15 @@ function update() {
     units.forEach(function (unit) {
         unit.move(map, units);
     });
-    if (units.length === 0 && score < targetScore) {
+    if (levelState === 'won') {
+    } else if (units.length === 0) {
+        levelState = 'lost';
         events.emit('level-lost');
     }
 }
 
 function checkEvents() {
-    if (currentEvent >= mapEvents.length) {
+    if (!mapEvents || currentEvent >= mapEvents.length) {
         return;
     }
 
@@ -99,8 +100,7 @@ function updateFallingUnits() {
 
 function render() {
     canvas.drawBackground();
-    canvas.drawText(score + ' / ' + targetScore, 10, 20);
-    canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 180);
+    canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 360);
     map.render(canvas);
 
     var orderedUnits = units.slice();
@@ -116,10 +116,10 @@ function render() {
     if (message) {
         var offset = 0;
         message.forEach(function (part) {
-            canvas.drawText(part, canvas.getWidth() / 2, 70 + offset, 'center');
-            offset += 14;
+            canvas.drawText(part, canvas.getWidth() / 2, 120 + offset);
+            offset += 32;
         });
-        canvas.drawText('[Press space to continue]', canvas.getWidth() / 2, 80 + offset, 'center');
+        canvas.drawText('[Press space to continue]', canvas.getWidth() / 2, 120 + offset, 'center');
     }
 
     tick++;
@@ -152,11 +152,11 @@ function onKeyPressed(key) {
 }
 
 exports.activate = function (newMap, newEvents) {
+    levelState = null;
     map = newMap;
     mapEvents = newEvents;
     currentEvent = 0;
     tick = 0;
-    score = 0;
     roleReversalScheduled = false;
     units = map.units.map(function (unit) {
         return unitTypes.createUnit(unit.type, unit.pos.x, unit.pos.y, unit.pos.z);
