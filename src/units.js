@@ -40,24 +40,23 @@ var Unit = {
         }
         return false;
     },
-    render: function (canvas, map, colors) {
-        canvas.translate3d(map.getUnitRenderPosition(this.pos));
+    render: function (canvas, colors) {
         if (this.animation) {
             this.animation.beforeRendering(canvas);
         }
-        canvas.drawPolygon('rgba(141,164,182,0.5)', [-10,12, 10,12, 10,50, -10,50], new UnitContext(this));
-        canvas.drawPolygon('#46515a', [-12,10, 12,10, 12,12, -12,12]);
-        canvas.drawPolygon('#46515a', [12,10, 12,50, 10,50, 10,10]);
-        canvas.drawPolygon('#46515a', [-12,10, -12,50, -10,50, -10,10]);
+        canvas.drawPolygon('rgba(141,164,182,0.5)', [-10,22, 10,22, 10,50, -10,50], new UnitContext(this));
+        canvas.drawPolygon('#46515a', [-12,20, 12,20, 12,22, -12,22]);
+        canvas.drawPolygon('#46515a', [12,20, 12,50, 10,50, 10,20]);
+        canvas.drawPolygon('#46515a', [-12,20, -12,50, -10,50, -10,20]);
         var partLife = this.life / this.maxLife;
-        canvas.drawPolygon(colors[0], [-10,50-38*partLife, 10,50-38*partLife, 10,50, -10,50]);
-        canvas.drawPolygon(colors[1], [-10,50-30*partLife, 10,50, -10,50]);
+        canvas.drawPolygon(colors[0], [-10,50-28*partLife, 10,50-28*partLife, 10,50, -10,50]);
+        canvas.drawPolygon(colors[1], [-10,50-20*partLife, 10,50, -10,50]);
         if (this.lookingLeft) {
-            canvas.drawPolygon(colors[2], [-4,16, -4,22, -6,22, -6,16]);
-            canvas.drawPolygon(colors[2], [2,16, 2,22, 4,22, 4,16]);
+            canvas.drawPolygon(colors[2], [-4,26, -4,32, -6,32, -6,26]);
+            canvas.drawPolygon(colors[2], [0,26, 0,32, 2,32, 2,26]);
         } else {
-            canvas.drawPolygon(colors[2], [-2,16, -2,22, -4,22, -4,16]);
-            canvas.drawPolygon(colors[2], [4,16, 4,22, 6,22, 6,16]);
+            canvas.drawPolygon(colors[2], [0,26, 0,32, -2,32, -2,26]);
+            canvas.drawPolygon(colors[2], [4,26, 4,32, 6,32, 6,26]);
         }
         if (this.animation) {
             this.animation.afterRendering(canvas);
@@ -65,7 +64,6 @@ var Unit = {
                 this.animation = null;
             }
         }
-        canvas.pop();
     }
 };
 
@@ -125,9 +123,13 @@ exports.Fighter = function (x, y, z) {
         this.pos = newPos;
     };
 
-    this.render = function (canvas, map) {
-        Unit.render.call(this, canvas, map, ['#ee3796', '#db0087', '#000']);
+    this.render = function (canvas) {
+        Unit.render.call(this, canvas, ['#ee3796', '#db0087', '#000']);
     };
+
+    this.getRenderPosition = function () {
+        return this.animation && this.animation.getPosition() || this.pos;
+    }
 };
 
 exports.Climber = function (x, y, z) {
@@ -171,9 +173,13 @@ exports.Climber = function (x, y, z) {
         this.pos = newPos;
     };
 
-    this.render = function (canvas, map) {
-        Unit.render.call(this, canvas, map, ['#24ff78', '#11c869', '#000']);
+    this.render = function (canvas) {
+        Unit.render.call(this, canvas, ['#24ff78', '#11c869', '#000']);
     };
+
+    this.getRenderPosition = function () {
+        return this.animation && this.animation.getPosition() || this.pos;
+    }
 };
 
 exports.Shadow = function (x, y, z) {
@@ -191,9 +197,13 @@ exports.Shadow = function (x, y, z) {
         }
     };
 
-    this.render = function (canvas, map) {
-        Unit.render.call(this, canvas, map, ['#3a0033', '#3a0033', '#850075']);
+    this.render = function (canvas) {
+        Unit.render.call(this, canvas, ['#3a0033', '#3a0033', '#850075']);
     };
+
+    this.getRenderPosition = function () {
+        return this.pos;
+    }
 };
 
 exports.createUnit = function (type, x, y, z) {

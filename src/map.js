@@ -75,7 +75,8 @@ var Map = function (save) {
         blocks[z][y][x] = block;
     };
 
-    this.render = function (canvas) {
+    this.render = function (canvas, units) {
+        units = units || this.units;
         for (var z in blocks) {
             for (var y in blocks[z]) {
                 for (var x in blocks[z][y]) {
@@ -84,6 +85,14 @@ var Map = function (save) {
                         blocks[z][y][x].render(canvas);
                         canvas.pop();
                     }
+                    units.forEach(function (unit) {
+                        var pos = this.getUnitRenderPosition(unit.getRenderPosition());
+                        if ((pos.x + 0.4 | 0) === +x && (pos.y + 0.4 | 0) === +y && (pos.z + 0.4 | 0) === +z) {
+                            canvas.translate3d(pos);
+                            unit.render(canvas);
+                            canvas.pop();
+                        }
+                    }, this);
                 }
             }
         }

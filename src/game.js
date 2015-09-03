@@ -77,16 +77,7 @@ function updateFallingUnits() {
 function render() {
     canvas.drawBackground();
     canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 360);
-    map.render(canvas);
-
-    var orderedUnits = units.slice();
-    orderedUnits.sort(function (a, b) {
-        return (a.pos.x - b.pos.x) + (a.pos.y - b.pos.y);
-    });
-    orderedUnits.forEach(function (unit) {
-        unit.render(canvas, map);
-    });
-
+    map.render(canvas, units);
     canvas.pop();
 
     if (message) {

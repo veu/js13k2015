@@ -62,15 +62,6 @@ function render() {
     canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 360);
     renderEditHelpers();
     map.render(canvas);
-
-    var orderedUnits = map.units.slice();
-    orderedUnits.sort(function (a, b) {
-        return (a.pos.x - b.pos.x) + (a.pos.y - b.pos.y);
-    });
-    orderedUnits.forEach(function (unit) {
-        unit.render(canvas, map, 0);
-    });
-
     canvas.pop();
 }
 
