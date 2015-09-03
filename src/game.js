@@ -6,8 +6,6 @@ var canvas = require('./canvas.js');
 var unitTypes = require('./units.js');
 
 var map;
-var mapEvents;
-var currentEvent;
 var units = [];
 var tick;
 var roleReversalScheduled;
@@ -19,14 +17,15 @@ function update() {
         return;
     }
     if (tick % 16 === 8) {
-        checkEvents();
         updateFallingUnits();
         return;
     }
     if (tick % 16 !== 0) {
         return;
     }
-    checkEvents();
+    units.forEach(function (unit) {
+        events.emit('unit-at', unit);
+    });
     if (roleReversalScheduled) {
         reverseRoles();
         roleReversalScheduled = false;
@@ -38,13 +37,13 @@ function update() {
     });
     units = units.filter(function (unit) {
         if (unit.life <= 0) {
+            events.emit('unit-died');
             return false;
         }
         if (isUnitWithLowestLifeAtPosition(unit)) {
             return false;
         }
         if (map.target && unit.pos.equals(map.target.pos)) {
-            events.emit('level-won');
             levelState = 'won';
             return false;
         }
@@ -56,36 +55,13 @@ function update() {
     units.forEach(function (unit) {
         unit.move(map, units);
     });
-    if (levelState === 'won') {
-    } else if (units.length === 0) {
+    if (!levelState && !units.some(function (unit) { return unit.type !== 'shadow'; })) {
         levelState = 'lost';
-        events.emit('level-lost');
+    }
+    if (levelState) {
+        events.emit('level-' + levelState);
     }
 }
-
-function checkEvents() {
-    if (!mapEvents || currentEvent >= mapEvents.length) {
-        return;
-    }
-
-    if (mapEvents[currentEvent].type === 'start') {
-        message = mapEvents[currentEvent].msg;
-        currentEvent++;
-        return;
-    }
-
-    if (mapEvents[currentEvent].type === 'at') {
-        units.some(function (unit) {
-            if (unit.pos.equals(mapEvents[currentEvent].pos)) {
-                message = mapEvents[currentEvent].msg;
-                currentEvent++;
-                return true;
-            }
-            return false;
-        });
-        return;
-    }
-};
 
 function updateFallingUnits() {
     units.forEach(function (unit) {
@@ -108,7 +84,7 @@ function render() {
         return (a.pos.x - b.pos.x) + (a.pos.y - b.pos.y);
     });
     orderedUnits.forEach(function (unit) {
-        unit.render(canvas, map, tick);
+        unit.render(canvas, map);
     });
 
     canvas.pop();
@@ -119,7 +95,7 @@ function render() {
             canvas.drawText(part, canvas.getWidth() / 2, 120 + offset);
             offset += 32;
         });
-        canvas.drawText('[Press space to continue]', canvas.getWidth() / 2, 120 + offset, 'center');
+        canvas.drawText('click to continue', canvas.getWidth() / 2, 130 + offset, 18);
     }
 
     tick++;
@@ -131,6 +107,7 @@ function reverseRoles() {
         var newUnit = unitTypes.createUnit(unitMap[unit.type], unit.pos.x, unit.pos.y, unit.pos.z);
         newUnit.animation = unit.animation;
         newUnit.life = unit.life;
+        newUnit.lookingLeft = unit.lookingLeft;
         return newUnit;
     });
 }
@@ -142,34 +119,42 @@ function isUnitWithLowestLifeAtPosition(unit) {
 }
 
 function onKeyPressed(key) {
-    if (key === ' ') {
-        if (message) {
-            message = false;
-        } else {
-            roleReversalScheduled = true;
-        }
+    if (!message && key === ' ') {
+        roleReversalScheduled = true;
     }
 }
 
-exports.activate = function (newMap, newEvents) {
+function onClicked(key) {
+    message = false;
+}
+
+exports.activate = function (newMap) {
     levelState = null;
     map = newMap;
-    mapEvents = newEvents;
-    currentEvent = 0;
     tick = 0;
     roleReversalScheduled = false;
     units = map.units.map(function (unit) {
         return unitTypes.createUnit(unit.type, unit.pos.x, unit.pos.y, unit.pos.z);
     });
     events.on('key-pressed', onKeyPressed);
+    events.on('clicked', onClicked);
     events.on('update', update);
     events.on('render', render);
 
-    checkEvents();
+    events.emit('level-started');
 };
 
 exports.deactivate = function () {
     events.off('key-pressed', onKeyPressed);
+    events.off('clicked', onClicked);
     events.off('update', update);
     events.off('render', render);
+};
+
+exports.showMessage = function (msg) {
+    message = msg;
+};
+
+exports.hideMessage = function () {
+    message = null;
 };

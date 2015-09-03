@@ -119,7 +119,14 @@ resize();
 exports.drawBackground = function () {
     canvas.width = inputCanvas.width = width;
     canvas.height = inputCanvas.height = height;
-    ctx.fillStyle = '#3a0033';
+
+    var gradient = ctx.createRadialGradient(
+        width / 2, height / 2 + 100, 1000,
+        width / 2, height / 2 + 100, 200
+    );
+    gradient.addColorStop(0, '#000');
+    gradient.addColorStop(1, '#3a0033');
+    ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
     inputData = {};
     inputIndex = 0;

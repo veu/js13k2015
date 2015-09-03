@@ -35,7 +35,7 @@ var Unit = {
             reachableEnemies.sort(function (a, b) {
                 return a.life - b.life || a.x - b.x || a.y - b.y;
             });
-            reachableEnemies.pop().damageTaken += this.damage;
+            reachableEnemies.shift().damageTaken += this.damage;
             return true;
         }
         return false;
@@ -52,8 +52,13 @@ var Unit = {
         var partLife = this.life / this.maxLife;
         canvas.drawPolygon(colors[0], [-10,50-38*partLife, 10,50-38*partLife, 10,50, -10,50]);
         canvas.drawPolygon(colors[1], [-10,50-30*partLife, 10,50, -10,50]);
-        canvas.drawPolygon(colors[2], [-2,16, -2,22, -4,22, -4,16]);
-        canvas.drawPolygon(colors[2], [4,16, 4,22, 6,22, 6,16]);
+        if (this.lookingLeft) {
+            canvas.drawPolygon(colors[2], [-4,16, -4,22, -6,22, -6,16]);
+            canvas.drawPolygon(colors[2], [2,16, 2,22, 4,22, 4,16]);
+        } else {
+            canvas.drawPolygon(colors[2], [-2,16, -2,22, -4,22, -4,16]);
+            canvas.drawPolygon(colors[2], [4,16, 4,22, 6,22, 6,16]);
+        }
         if (this.animation) {
             this.animation.afterRendering(canvas);
             if (this.animation.hasEnded()) {
@@ -112,10 +117,15 @@ exports.Fighter = function (x, y, z) {
         this.animation = new animations.MovementAnimation(
             map.getUnitRenderPosition(this.pos), map.getUnitRenderPosition(newPos)
         );
+
+        if (newPos.x !== this.pos.x || newPos.y !== this.pos.y) {
+            this.lookingLeft = newPos.x < this.pos.x || newPos.x > this.pos.x;
+        }
+
         this.pos = newPos;
     };
 
-    this.render = function (canvas, map, tick) {
+    this.render = function (canvas, map) {
         Unit.render.call(this, canvas, map, ['#ee3796', '#db0087', '#000']);
     };
 };
@@ -153,6 +163,11 @@ exports.Climber = function (x, y, z) {
         this.animation = new animations.MovementAnimation(
             map.getUnitRenderPosition(this.pos), map.getUnitRenderPosition(newPos)
         );
+
+        if (newPos.x !== this.pos.x || newPos.y !== this.pos.y) {
+            this.lookingLeft = newPos.x < this.pos.x || newPos.x > this.pos.x;
+        }
+
         this.pos = newPos;
     };
 
@@ -176,7 +191,7 @@ exports.Shadow = function (x, y, z) {
         }
     };
 
-    this.render = function (canvas, map, tick) {
+    this.render = function (canvas, map) {
         Unit.render.call(this, canvas, map, ['#3a0033', '#3a0033', '#850075']);
     };
 };
