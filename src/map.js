@@ -34,8 +34,10 @@ var Map = function (save) {
                 blocks[z][y] = [];
                 for (var x = size.x; x--;) {
                     blocks[z][y][x] = null;
-                    if (save) {
-                        var index = (z * size.y + y) * size.x + x;
+                    if (z == 0) {
+                        blocks[z][y][x] = new blockTypes.Cube(x, y, z);
+                    } else if (save) {
+                        var index = ((z - 1) * size.y + y) * size.x + x;
                         var type = (save.charCodeAt(index >> 2) >> ((index % 4) * 2)) & 3;
                         if (type === TYPE_CUBE) {
                             blocks[z][y][x] = new blockTypes.Cube(x, y, z);
@@ -44,8 +46,6 @@ var Map = function (save) {
                         } else if (type === TYPE_RAMPY) {
                             blocks[z][y][x] = new blockTypes.Ramp(x, y, z, 'y');
                         }
-                    } else if (z == 0) {
-                        blocks[z][y][x] = new blockTypes.Cube(x, y, z);
                     }
                 }
             }
@@ -75,7 +75,8 @@ var Map = function (save) {
         blocks[z][y][x] = block;
     };
 
-    this.render = function (canvas) {
+    this.render = function (canvas, units) {
+        units = units || this.units;
         for (var z in blocks) {
             for (var y in blocks[z]) {
                 for (var x in blocks[z][y]) {
@@ -84,6 +85,14 @@ var Map = function (save) {
                         blocks[z][y][x].render(canvas);
                         canvas.pop();
                     }
+                    units.forEach(function (unit) {
+                        var pos = this.getUnitRenderPosition(unit.getRenderPosition());
+                        if ((pos.x + 0.4 | 0) === +x && (pos.y + 0.4 | 0) === +y && (pos.z + 0.4 | 0) === +z) {
+                            canvas.translate3d(pos);
+                            unit.render(canvas);
+                            canvas.pop();
+                        }
+                    }, this);
                 }
             }
         }
@@ -136,6 +145,9 @@ var Map = function (save) {
     this.toString = function() {
         var blockTypes = [];
         for (var z in blocks) {
+            if (+z === 0) {
+                continue;
+            }
             for (var y in blocks[z]) {
                 for (var x in blocks[z][y]) {
                     var type = TYPE_EMPTY;
@@ -205,11 +217,11 @@ var Map = function (save) {
         if (aGround && bGround) {
             // cube to ramp
             if (aGround.type === 'cube' && bGround.type === 'ramp')  {
-                return dir === bGround.dir;
+                return aGround[dir] > bGround[dir] ?  a.z < b.z : a.z === b.z;
             }
             // ramp to cube
-            if (aGround.type === 'ramp' && bGround.type === 'cube')  {
-                return dir === aGround.dir;
+            if (aGround.type === 'ramp' && bGround.type === 'cube' && dir === aGround.dir)  {
+                return aGround[dir] < bGround[dir] ?  a.z > b.z : a.z === b.z;
             }
             // ramp to ramp
             if (aGround.type === 'ramp' && bGround.type === 'ramp')  {

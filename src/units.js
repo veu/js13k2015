@@ -35,10 +35,35 @@ var Unit = {
             reachableEnemies.sort(function (a, b) {
                 return a.life - b.life || a.x - b.x || a.y - b.y;
             });
-            reachableEnemies.pop().damageTaken += this.damage;
+            reachableEnemies.shift().damageTaken += this.damage;
             return true;
         }
         return false;
+    },
+    render: function (canvas, colors) {
+        if (this.animation) {
+            this.animation.beforeRendering(canvas);
+        }
+        canvas.drawPolygon('rgba(141,164,182,0.5)', [-10,22, 10,22, 10,50, -10,50], new UnitContext(this));
+        canvas.drawPolygon('#46515a', [-12,20, 12,20, 12,22, -12,22]);
+        canvas.drawPolygon('#46515a', [12,20, 12,50, 10,50, 10,20]);
+        canvas.drawPolygon('#46515a', [-12,20, -12,50, -10,50, -10,20]);
+        var partLife = this.life / this.maxLife;
+        canvas.drawPolygon(colors[0], [-10,50-28*partLife, 10,50-28*partLife, 10,50, -10,50]);
+        canvas.drawPolygon(colors[1], [-10,50-20*partLife, 10,50, -10,50]);
+        if (this.lookingLeft) {
+            canvas.drawPolygon(colors[2], [-4,26, -4,32, -6,32, -6,26]);
+            canvas.drawPolygon(colors[2], [0,26, 0,32, 2,32, 2,26]);
+        } else {
+            canvas.drawPolygon(colors[2], [0,26, 0,32, -2,32, -2,26]);
+            canvas.drawPolygon(colors[2], [4,26, 4,32, 6,32, 6,26]);
+        }
+        if (this.animation) {
+            this.animation.afterRendering(canvas);
+            if (this.animation.hasEnded()) {
+                this.animation = null;
+            }
+        }
     }
 };
 
@@ -48,6 +73,7 @@ exports.Fighter = function (x, y, z) {
     this.life = this.maxLife = config.fighter.life;
     this.damage = config.fighter.damage;
     this.damageTaken = 0;
+    this.falling = false;
 
     this.attack = Unit.attack;
 
@@ -55,16 +81,14 @@ exports.Fighter = function (x, y, z) {
         var groundBlock = map.get(this.pos.sub(0, 0, 1));
         if (!groundBlock) {
             this.animation = new animations.FallingAnimation(
-                this.pos, map.getUnitRenderPosition(this.pos.sub(0, 0, 1)), 15
+                this.pos, map.getUnitRenderPosition(this.pos.sub(0, 0, 1))
             );
             this.pos = this.pos.sub(0, 0, 1);
-            if (map.get(this.pos.sub(0, 0, 1))) {
-                this.damageTaken += config.fighter.fallDamage;
-            }
+            this.falling = true;
             return;
         }
         if (this.attack(map, units)) {
-            this.animation = new animations.FightingAnimation(15);
+            this.animation = new animations.FightingAnimation();
             return;
         }
         if (!map.target || this.pos.equals(map.target.pos)) {
@@ -89,33 +113,23 @@ exports.Fighter = function (x, y, z) {
         }
 
         this.animation = new animations.MovementAnimation(
-            map.getUnitRenderPosition(this.pos), map.getUnitRenderPosition(newPos), 15
+            map.getUnitRenderPosition(this.pos), map.getUnitRenderPosition(newPos)
         );
+
+        if (newPos.x !== this.pos.x || newPos.y !== this.pos.y) {
+            this.lookingLeft = newPos.x < this.pos.x || newPos.x > this.pos.x;
+        }
+
         this.pos = newPos;
     };
 
-    this.render = function (canvas, map, tick) {
-        canvas.translate3d(map.getUnitRenderPosition(this.pos));
-        if (this.animation) {
-            this.animation.beforeRendering(canvas);
-        }
-        canvas.drawPolygon('rgba(141,164,182,0.5)', [-5,6, 5,6, 5,25, -5,25], new UnitContext(this));
-        canvas.drawPolygon('#46515a', [-6,5, 6,5, 6,6, -6,6]);
-        canvas.drawPolygon('#46515a', [6,5, 6,25, 5,25, 5,5]);
-        canvas.drawPolygon('#46515a', [-6,5, -6,25, -5,25, -5,5]);
-        var partLife = this.life / this.maxLife;
-        canvas.drawPolygon('#ee3796', [-5,25-19*partLife, 5,25-19*partLife, 5,25, -5,25]);
-        canvas.drawPolygon('#db0087', [-5,25-15*partLife, 5,25, -5,25]);
-        canvas.drawPolygon('#000', [-1,8, -1,11, -2,11, -2,8]);
-        canvas.drawPolygon('#000', [2,8, 2,11, 3,11, 3,8]);
-        if (this.animation) {
-            this.animation.afterRendering(canvas);
-            if (this.animation.hasEnded()) {
-                this.animation = null;
-            }
-        }
-        canvas.pop();
+    this.render = function (canvas) {
+        Unit.render.call(this, canvas, ['#ee3796', '#db0087', '#000']);
     };
+
+    this.getRenderPosition = function () {
+        return this.animation && this.animation.getPosition() || this.pos;
+    }
 };
 
 exports.Climber = function (x, y, z) {
@@ -129,7 +143,7 @@ exports.Climber = function (x, y, z) {
 
     this.move = function (map, units) {
         if (this.attack(map, units)) {
-            this.animation = new animations.FightingAnimation(15);
+            this.animation = new animations.FightingAnimation();
             return;
         }
         if (!map.target || this.pos.equals(map.target.pos)) {
@@ -149,33 +163,23 @@ exports.Climber = function (x, y, z) {
         }
 
         this.animation = new animations.MovementAnimation(
-            map.getUnitRenderPosition(this.pos), map.getUnitRenderPosition(newPos), 15
+            map.getUnitRenderPosition(this.pos), map.getUnitRenderPosition(newPos)
         );
+
+        if (newPos.x !== this.pos.x || newPos.y !== this.pos.y) {
+            this.lookingLeft = newPos.x < this.pos.x || newPos.x > this.pos.x;
+        }
+
         this.pos = newPos;
     };
 
-    this.render = function (canvas, map, tick) {
-        canvas.translate3d(map.getUnitRenderPosition(this.pos));
-        if (this.animation) {
-            this.animation.beforeRendering(canvas);
-        }
-        canvas.drawPolygon('rgba(141,164,182,0.5)', [-5,6, 5,6, 5,25, -5,25], new UnitContext(this));
-        canvas.drawPolygon('#46515a', [-6,5, 6,5, 6,6, -6,6]);
-        canvas.drawPolygon('#46515a', [6,5, 6,25, 5,25, 5,5]);
-        canvas.drawPolygon('#46515a', [-6,5, -6,25, -5,25, -5,5]);
-        var partLife = this.life / this.maxLife;
-        canvas.drawPolygon('#24ff78', [-5,25-19*partLife, 5,25-19*partLife, 5,25, -5,25]);
-        canvas.drawPolygon('#11c869', [-5,25-15*partLife, 5,25, -5,25]);
-        canvas.drawPolygon('#000', [-1,8, -1,11, -2,11, -2,8]);
-        canvas.drawPolygon('#000', [2,8, 2,11, 3,11, 3,8]);
-        if (this.animation) {
-            this.animation.afterRendering(canvas);
-            if (this.animation.hasEnded()) {
-                this.animation = null;
-            }
-        }
-        canvas.pop();
+    this.render = function (canvas) {
+        Unit.render.call(this, canvas, ['#24ff78', '#11c869', '#000']);
     };
+
+    this.getRenderPosition = function () {
+        return this.animation && this.animation.getPosition() || this.pos;
+    }
 };
 
 exports.Shadow = function (x, y, z) {
@@ -189,31 +193,17 @@ exports.Shadow = function (x, y, z) {
 
     this.move = function (map, units) {
         if (this.attack(map, units)) {
-            this.animation = new animations.FightingAnimation(15);
+            this.animation = new animations.FightingAnimation();
         }
     };
 
-    this.render = function (canvas, map, tick) {
-        canvas.translate3d(map.getUnitRenderPosition(this.pos));
-        if (this.animation) {
-            this.animation.beforeRendering(canvas);
-        }
-        canvas.drawPolygon('rgba(141,164,182,0.5)', [-5,6, 5,6, 5,25, -5,25], new UnitContext(this));
-        canvas.drawPolygon('#46515a', [-6,5, 6,5, 6,6, -6,6]);
-        canvas.drawPolygon('#46515a', [6,5, 6,25, 5,25, 5,5]);
-        canvas.drawPolygon('#46515a', [-6,5, -6,25, -5,25, -5,5]);
-        var partLife = this.life / this.maxLife;
-        canvas.drawPolygon('#3a0033', [-5,25-19*partLife, 5,25-19*partLife, 5,25, -5,25]);
-        canvas.drawPolygon('#850075', [-1,8, -1,11, -2,11, -2,8]);
-        canvas.drawPolygon('#850075', [2,8, 2,11, 3,11, 3,8]);
-        if (this.animation) {
-            this.animation.afterRendering(canvas);
-            if (this.animation.hasEnded()) {
-                this.animation = null;
-            }
-        }
-        canvas.pop();
+    this.render = function (canvas) {
+        Unit.render.call(this, canvas, ['#3a0033', '#3a0033', '#850075']);
     };
+
+    this.getRenderPosition = function () {
+        return this.pos;
+    }
 };
 
 exports.createUnit = function (type, x, y, z) {
