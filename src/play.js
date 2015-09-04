@@ -49,7 +49,7 @@ exports.start = function () {
             events: {
                 'start': {
                     msg: [
-                        "Now there's two of them. Try pressing space to see what happens.",
+                        "Now there's two of them. Can you get at least one to the goal?",
                     ]
                 },
                 'lost': {
