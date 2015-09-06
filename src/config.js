@@ -1,7 +1,7 @@
 exports.units = {
     climber: {
-        life: 24,
-        damage: 6
+        life: 18,
+        damage: 8
     },
     fighter: {
         life: 24,
@@ -10,6 +10,6 @@ exports.units = {
     },
     shadow: {
         life: 24,
-        damage: 10
+        damage: 6
     }
 };

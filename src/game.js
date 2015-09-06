@@ -97,7 +97,7 @@ function reverseRoles() {
     units = units.map(function (unit) {
         var newUnit = unitTypes.createUnit(unitMap[unit.type], unit.pos.x, unit.pos.y, unit.pos.z);
         newUnit.animation = unit.animation;
-        newUnit.life = unit.life;
+        newUnit.life = unit.life / unit.maxLife * newUnit.maxLife | 0;
         newUnit.lookingLeft = unit.lookingLeft;
         return newUnit;
     });
@@ -109,8 +109,8 @@ function isUnitWithLowestLifeAtPosition(unit) {
     });
 }
 
-function onKeyPressed(key) {
-    if (!message && key === ' ') {
+function onKeyPressed(data) {
+    if (!message && data.key === ' ') {
         roleReversalScheduled = true;
     }
 }

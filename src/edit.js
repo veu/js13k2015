@@ -8,8 +8,8 @@ exports.start = function () {
     var editing = true;
 
     editor.activate();
-    events.on('key-pressed', function (key) {
-        if (key !== 'E') {
+    events.on('key-pressed', function (data) {
+        if (data.key !== 'E') {
             return;
         }
         editing = !editing;
@@ -35,6 +35,6 @@ exports.start = function () {
 
     document.onkeydown = function (event) {
         var key = String.fromCharCode(event.keyCode);
-        events.emit('key-pressed', key);
+        events.emit('key-pressed', {key: key, code: event.keyCode});
     }
 };

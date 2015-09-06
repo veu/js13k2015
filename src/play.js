@@ -54,7 +54,8 @@ exports.start = function () {
                 },
                 'lost': {
                     msg: [
-                        "The enemies can only attack one of ours at a time. Use that to your advantage."
+                        "The enemies can only attack one of ours at a time; use it to your advantage.",
+                        "Press enter to reset the level faster."
                     ]
                 }
             }
@@ -101,6 +102,13 @@ exports.start = function () {
         game.deactivate();
         restartLevel();
     });
+    events.on('key-pressed', function (data) {
+        if (data.code !== 13) {
+            return;
+        }
+        game.deactivate();
+        game.activate(Map.load(levels[currentLevel].map));
+    });
     startLevel();
 
     var fps = 30;
@@ -143,7 +151,7 @@ exports.start = function () {
 
     document.onkeydown = function (event) {
         var key = String.fromCharCode(event.keyCode);
-        events.emit('key-pressed', key);
+        events.emit('key-pressed', {key: key, code: event.keyCode});
     }
 
     document.onclick = function (event) {

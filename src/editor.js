@@ -20,11 +20,11 @@ var placeableElements = [
 var selectedPlaceableIndex = 0;
 var map = new Map();
 
-function onKeyPressed(key) {
-    if (key === 'N') {
+function onKeyPressed(data) {
+    if (data.key === 'N') {
         selectedPlaceableIndex = (selectedPlaceableIndex + 1) % placeableElements.length;
     }
-    if (key === 'S') {
+    if (data.key === 'S') {
         console.log('level = "' + map + '"');
     }
 }
