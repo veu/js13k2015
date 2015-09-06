@@ -73,6 +73,7 @@ exports.Fighter = function (x, y, z) {
     this.life = this.maxLife = config.fighter.life;
     this.damage = config.fighter.damage;
     this.damageTaken = 0;
+    this.fallDamageTaken = 0;
     this.falling = false;
 
     this.attack = Unit.attack;
@@ -80,7 +81,7 @@ exports.Fighter = function (x, y, z) {
     this.move = function (map, units) {
         var groundBlock = map.get(this.pos.sub(0, 0, 1));
         if (!groundBlock) {
-            this.animation = new animations.FallingAnimation(
+            this.animation = new animations.MovementAnimation(
                 this.pos, map.getUnitRenderPosition(this.pos.sub(0, 0, 1))
             );
             this.pos = this.pos.sub(0, 0, 1);
@@ -124,7 +125,13 @@ exports.Fighter = function (x, y, z) {
     };
 
     this.render = function (canvas) {
+        if (this.falling) {
+            canvas.rotate(0.1);
+        }
         Unit.render.call(this, canvas, ['#ee3796', '#db0087', '#000']);
+        if (this.falling) {
+            canvas.rotate(0);
+        }
     };
 
     this.getRenderPosition = function () {

@@ -60,6 +60,14 @@ var Map = function (save) {
         return blocks[z] && blocks[z][y] && blocks[z][y][x];
     };
 
+    this.getTopBlockAt = function (x, y) {
+        for (var z = size.z; z--;) {
+            if (blocks[z][y][x]) {
+                return blocks[z][y][x];
+            }
+        }
+    };
+
     var isValid = this.isValid = function (x, y, z) {
         if (y === undefined) {
             return isValid(x.x, x.y, x.z);

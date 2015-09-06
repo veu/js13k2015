@@ -66,8 +66,10 @@ function update() {
 function updateFallingUnits() {
     units.forEach(function (unit) {
         if (unit.falling) {
-            unit.life = Math.max(unit.life - config.fighter.fallDamage, 0);
+            unit.fallDamageTaken += config.fighter.fallDamage;
             if (map.get(unit.pos.sub(0, 0, 1))) {
+                unit.life = Math.max(0, unit.life - unit.fallDamageTaken);
+                unit.fallDamageTaken = 0;
                 unit.falling = false;
             }
         }
