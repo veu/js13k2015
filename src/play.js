@@ -2,6 +2,7 @@
 
 var events = require('./events.js');
 var game = require('./game.js');
+var save = require('./save.js');
 
 exports.start = function () {
 
@@ -71,7 +72,7 @@ exports.start = function () {
     ];
 
     var Map = require('./map.js').Map;
-    var currentLevel = 0;
+    var currentLevel = save.getCurrentLevel();
     var activeEvents;
 
     events.on('unit-at', function (unit) {
@@ -90,9 +91,9 @@ exports.start = function () {
         game.deactivate();
         currentLevel++;
         if (currentLevel === levels.length) {
-            alert('fin');
             return;
         }
+        save.unlockLevel(currentLevel);
         startLevel();
     });
     events.on('level-lost', function () {

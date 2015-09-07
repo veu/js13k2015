@@ -26,7 +26,9 @@ var inputIndex = 0;
 
 function drawPolygon(ctx, color, points) {
     ctx.translate(currentTranslation.x, currentTranslation.y);
-    ctx.rotate(currentRotation);
+    if (currentRotation) {
+        ctx.rotate(currentRotation);
+    }
     ctx.beginPath();
     ctx.moveTo(points[0], points[1]);
     for (var i = 2; i < points.length; ++i) {
@@ -35,7 +37,9 @@ function drawPolygon(ctx, color, points) {
     ctx.lineTo(points[i - 1], points[i]);
     ctx.fillStyle = color;
     ctx.fill();
-    ctx.rotate(-currentRotation);
+    if (currentRotation) {
+        ctx.rotate(-currentRotation);
+    }
     ctx.translate(-currentTranslation.x, -currentTranslation.y);
 }
 
@@ -158,11 +162,17 @@ exports.drawPolygon3d = function (color, points, data) {
     this.drawPolygon(color, points2d, data);
 };
 
-exports.drawText = function (text, x, y, size) {
+exports.drawText = function (text, x, y, size, align) {
     ctx.font = (size || 24) + 'px Trebuchet MS, Helvetica, sans-serif';
     ctx.fillStyle = '#ccc';
-    ctx.textAlign = 'center';
+    ctx.textAlign = align || 'center';
+    if (currentRotation) {
+        ctx.rotate(currentRotation);
+    }
     ctx.fillText(text, currentTranslation.x + x, currentTranslation.y + y);
+    if (currentRotation) {
+        ctx.rotate(-currentRotation);
+    }
 };
 
 exports.translate = function (x, y) {
