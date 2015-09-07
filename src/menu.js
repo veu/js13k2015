@@ -15,7 +15,7 @@ exports.start = function () {
         canvas.rotate(0);
         canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 360);
 
-        for (var i = 0; i <= localStorage['unlockedLevel']; i++) {
+        for (var i = 0; i <= save.getUnlockedLevel(); i++) {
             canvas.translate3d(1, 1, i);
             var block = new blockTypes.Cube(0, i, 0);
             block.render(canvas);
