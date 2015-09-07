@@ -3,6 +3,7 @@
 var events = require('./events.js');
 var game = require('./game.js');
 var save = require('./save.js');
+var canvas = require('./canvas.js');
 
 exports.start = function () {
 
@@ -118,6 +119,7 @@ exports.start = function () {
         events.emit('update');
         window.requestAnimationFrame(function render() {
             events.emit('render');
+            canvas.drawText('Level ' + (+currentLevel + 1), 20, 880, 20, 'left');
         });
         setTimeout(loop, 1000 / fps);
     })();
