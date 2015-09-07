@@ -54,7 +54,7 @@ function renderEditHelpers() {
 }
 
 function render() {
-    canvas.drawBackground();
+    canvas.reset();
     canvas.drawText('edit mode', 80, 30);
     canvas.translate(80, 50);
     placeableElements[selectedPlaceableIndex].render(canvas, map);

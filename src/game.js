@@ -77,7 +77,7 @@ function updateFallingUnits() {
 }
 
 function render() {
-    canvas.drawBackground();
+    canvas.reset();
     canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 360);
     map.render(canvas, units);
     canvas.pop();

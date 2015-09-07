@@ -117,21 +117,30 @@ var resize = window.onresize = function () {
     canvas.style.height = (height * scale | 0) + 'px';
     canvas.style.left = offsetX + 'px';
     canvas.style.top = offsetY + 'px';
+
+    drawBackground(scale);
 };
 resize();
 
-exports.drawBackground = function () {
-    canvas.width = inputCanvas.width = width;
-    canvas.height = inputCanvas.height = height;
-
+function drawBackground(scale) {
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
     var gradient = ctx.createRadialGradient(
-        width / 2, height / 2 + 100, 1000,
-        width / 2, height / 2 + 100, 200
+        innerWidth/ 2, innerHeight / 2 + 100 * scale, 1000 * scale,
+        innerWidth / 2, innerHeight / 2 + 100 * scale, 200 * scale
     );
     gradient.addColorStop(0, '#000');
     gradient.addColorStop(1, '#3a0033');
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, innerWidth, innerHeight);
+    document.body.style.background = 'url(' + canvas.toDataURL("image/png") + ')';
+}
+
+exports.reset = function () {
+    canvas.width = inputCanvas.width = width;
+    canvas.height = inputCanvas.height = height;
     inputData = {};
     inputIndex = 0;
     currentTranslation = {x: 0, y: 0};

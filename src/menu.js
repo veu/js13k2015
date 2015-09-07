@@ -8,7 +8,7 @@ var save = require('./save.js');
 
 exports.start = function () {
     function render() {
-        canvas.drawBackground();
+        canvas.reset();
         canvas.drawText('Castle Climb', 600, 100, 40);
         canvas.rotate(0.55);
         canvas.drawText('Level', 825, 257, 20);
