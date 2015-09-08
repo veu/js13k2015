@@ -119,7 +119,7 @@ exports.start = function () {
         }
         if (data.code === 13) {
             game.deactivate();
-            game.restartLevel();
+            restartLevel();
         }
     });
     startLevel();

@@ -20,13 +20,11 @@ var placeableElements = [
 var selectedPlaceableIndex = 0;
 var map;
 var active = false;
+var textarea = document.querySelector('textarea');
 
 function onKeyPressed(data) {
     if (data.key === 'N') {
         selectedPlaceableIndex = (selectedPlaceableIndex + 1) % placeableElements.length;
-    }
-    if (data.key === 'S') {
-        console.log('level = "' + map + '"');
     }
 }
 
@@ -66,11 +64,10 @@ function render() {
     canvas.pop();
 }
 
-function update() {
-   if (window.level) {
-       map = Map.load(window.level);
-       window.level = null;
-   }
+function onPaste(event) {
+    if (event.clipboardData.types.length === 1 && event.clipboardData.types[0] === 'text/plain') {
+        map = Map.load(event.clipboardData.getData('text/plain'));
+    }
 }
 
 function onCanvasClicked(context) {
@@ -113,23 +110,34 @@ function onCanvasClicked(context) {
     } else if (['fighter', 'climber', 'shadow'].indexOf(element.type) >= 0) {
         map.units.push(unitTypes.createUnit(element.type, x, y, z));
     }
-};
+
+    updateLevelString();
+}
+
+function updateLevelString() {
+    if (textarea.firstChild) {
+        textarea.removeChild(textarea.firstChild);
+    }
+    textarea.appendChild(document.createTextNode('' + map));
+}
 
 exports.activate = function (newMap) {
     map = newMap;
     events.on('key-pressed', onKeyPressed);
-    events.on('update', update);
     events.on('render', render);
     events.on('canvas-clicked', onCanvasClicked);
+    textarea.style.display = 'block';
+    textarea.onpaste = onPaste;
+    updateLevelString();
     active = true;
 };
 
 exports.deactivate = function () {
     exports.map = map;
     events.off('key-pressed', onKeyPressed);
-    events.off('update', update);
     events.off('render', render);
     events.off('canvas-clicked', onCanvasClicked);
+    textarea.style.display = 'none';
     active = false;
 };
 
