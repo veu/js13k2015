@@ -19,6 +19,7 @@ var placeableElements = [
 ];
 var selectedPlaceableIndex = 0;
 var map;
+var mapEvents;
 var active = false;
 var textarea = document.querySelector('textarea');
 
@@ -66,7 +67,9 @@ function render() {
 
 function onPaste(event) {
     if (event.clipboardData.types.length === 1 && event.clipboardData.types[0] === 'text/plain') {
-        map = Map.load(event.clipboardData.getData('text/plain'));
+        var level = JSON.parse(event.clipboardData.getData('text/plain'));
+        map = Map.load(level.map);
+        mapEvents = level.events;
     }
 }
 
@@ -118,11 +121,16 @@ function updateLevelString() {
     if (textarea.firstChild) {
         textarea.removeChild(textarea.firstChild);
     }
-    textarea.appendChild(document.createTextNode('' + map));
+    var level = {
+        map: '' + map,
+        events: mapEvents
+    };
+    textarea.appendChild(document.createTextNode(JSON.stringify(level)));
 }
 
-exports.activate = function (newMap) {
-    map = newMap;
+exports.activate = function (level) {
+    map = Map.load(level.map);
+    mapEvents = level.events;
     events.on('key-pressed', onKeyPressed);
     events.on('render', render);
     events.on('canvas-clicked', onCanvasClicked);
@@ -133,7 +141,10 @@ exports.activate = function (newMap) {
 };
 
 exports.deactivate = function () {
-    exports.map = map;
+    exports.level = {
+        map: '' + map,
+        events: mapEvents
+    };
     events.off('key-pressed', onKeyPressed);
     events.off('render', render);
     events.off('canvas-clicked', onCanvasClicked);

@@ -110,11 +110,11 @@ exports.start = function () {
         if (data.key === 'E') {
             if (editor.isActive()) {
                 editor.deactivate();
-                map = editor.map;
-                game.activate(map);
+                levels[currentLevel] = editor.level;
+                startLevel();
             } else {
                 game.deactivate();
-                editor.activate(map);
+                editor.activate(levels[currentLevel]);
             }
         }
         if (data.code === 13) {
