@@ -18,7 +18,8 @@ var placeableElements = [
     new blockTypes.Target(0, 0, 0)
 ];
 var selectedPlaceableIndex = 0;
-var map = new Map();
+var map;
+var active = false;
 
 function onKeyPressed(data) {
     if (data.key === 'N') {
@@ -114,11 +115,13 @@ function onCanvasClicked(context) {
     }
 };
 
-exports.activate = function () {
+exports.activate = function (newMap) {
+    map = newMap;
     events.on('key-pressed', onKeyPressed);
     events.on('update', update);
     events.on('render', render);
     events.on('canvas-clicked', onCanvasClicked);
+    active = true;
 };
 
 exports.deactivate = function () {
@@ -127,4 +130,9 @@ exports.deactivate = function () {
     events.off('update', update);
     events.off('render', render);
     events.off('canvas-clicked', onCanvasClicked);
+    active = false;
+};
+
+exports.isActive = function () {
+    return active;
 };

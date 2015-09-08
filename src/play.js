@@ -1,6 +1,7 @@
 'use strict';
 
 var events = require('./events.js');
+var editor = require('./editor.js');
 var game = require('./game.js');
 var save = require('./save.js');
 var canvas = require('./canvas.js');
@@ -75,6 +76,7 @@ exports.start = function () {
     var Map = require('./map.js').Map;
     var currentLevel = save.getCurrentLevel();
     var activeEvents;
+    var map;
 
     events.on('unit-at', function (unit) {
         handleEvent('at:' + unit.pos);
@@ -105,11 +107,20 @@ exports.start = function () {
         restartLevel();
     });
     events.on('key-pressed', function (data) {
-        if (data.code !== 13) {
-            return;
+        if (data.key === 'E') {
+            if (editor.isActive()) {
+                editor.deactivate();
+                map = editor.map;
+                game.activate(map);
+            } else {
+                game.deactivate();
+                editor.activate(map);
+            }
         }
-        game.deactivate();
-        game.activate(Map.load(levels[currentLevel].map));
+        if (data.code === 13) {
+            game.deactivate();
+            game.restartLevel();
+        }
     });
     startLevel();
 
@@ -145,11 +156,12 @@ exports.start = function () {
             activeEvents[e] = levels[currentLevel].events[e];
         }
 
-        game.activate(Map.load(levels[currentLevel].map));
+        map = Map.load(levels[currentLevel].map);
+        game.activate(map);
     }
 
     function restartLevel() {
-        game.activate(Map.load(levels[currentLevel].map));
+        game.activate(map);
     }
 
     document.onkeydown = function (event) {
