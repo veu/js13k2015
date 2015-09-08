@@ -77,6 +77,7 @@ exports.start = function () {
     var currentLevel = save.getCurrentLevel();
     var activeEvents;
     var map;
+    var edited = false;
 
     events.on('unit-at', function (unit) {
         handleEvent('at:' + unit.pos);
@@ -92,11 +93,13 @@ exports.start = function () {
             return;
         }
         game.deactivate();
-        currentLevel++;
-        if (currentLevel === levels.length) {
-            return;
+        if (!edited) {
+            currentLevel++;
+            if (currentLevel === levels.length) {
+                return;
+            }
+            save.unlockLevel(currentLevel);
         }
-        save.unlockLevel(currentLevel);
         startLevel();
     });
     events.on('level-lost', function () {
@@ -108,6 +111,7 @@ exports.start = function () {
     });
     events.on('key-pressed', function (data) {
         if (data.key === 'E') {
+            edited = true;
             if (editor.isActive()) {
                 editor.deactivate();
                 levels[currentLevel] = editor.level;
