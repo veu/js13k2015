@@ -117,6 +117,9 @@ exports.start = function () {
                 editor.activate(levels[currentLevel]);
             }
         }
+        if (data.code === 27) {
+            document.location.href = 'index.html';
+        }
         if (data.code === 13) {
             game.deactivate();
             restartLevel();
