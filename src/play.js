@@ -172,6 +172,9 @@ exports.start = function () {
     }
 
     document.onkeydown = function (event) {
+        if (event.target !== document.body) {
+            return;
+        }
         var key = String.fromCharCode(event.keyCode);
         events.emit('key-pressed', {key: key, code: event.keyCode});
     }
