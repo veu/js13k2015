@@ -94,7 +94,7 @@ var Map = function (save) {
                         canvas.pop();
                     }
                     units.forEach(function (unit) {
-                        var pos = this.getUnitRenderPosition(unit.getRenderPosition());
+                        var pos = unit.getRenderPosition(this);
                         if ((pos.x + 0.4 | 0) === +x && (pos.y + 0.4 | 0) === +y && (pos.z + 0.4 | 0) === +z) {
                             canvas.translate3d(pos);
                             unit.render(canvas);
