@@ -44,15 +44,50 @@ exports.start = function () {
                         "Looks like someone‘s hell-bent to fight but too weak in his current form.",
                         "Next time, press space to switch back before fighting."
                     ]
+                },
+                'won': {
+                    msg: [
+                        "Right on! Remember: red is for fighting and green for climbing."
+                    ]
                 }
             }
         },
-        { // concurrency
+        { // concurrency 1
+
+            map: "2,4,2,2;2,2,5,2;0,2,7,1;2,2,2,3;1,8,3,1.0,0,4.VQVUFVBVQlUBVQVUFQADAAAAAABUAVAFQBUAVQAAAAAAAAAAAAAAAFAAQAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            events: {
+                'start': {
+                    msg: [
+                        "These two have opposite colors. Pressing space reverses their roles.",
+                        "Can you get one of them to the goal?"
+                    ]
+                },
+                'won': {
+                    msg: [
+                        "Amazing!"
+                    ]
+                }
+            }
+        },
+        { // avoiding
+            map: "2,3,0,3;2,3,3,3;2,3,7,3;2,1,8,3;2,0,2,4;2,6,8,2;2,6,5,2;2,6,2,2;0,8,7,1.0,0,4.VQlUVVBVQVUFVRVUVVBVQVUFVRVUAVAFQBUAVQBUAVAFQBUAVQCUAFAAQAEABQAUAFAAQAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            events: {
+                'start': {
+                    msg: [
+                        "Sometimes it‘s best to avoid confrontation."
+                    ]
+                },
+                'won':{
+                    msg: ["Impressive!"]
+                }
+            }
+        },
+        { // concurrency 2
             map: "2,1,1,5;2,4,4,2;0,8,3,1;0,3,6,1.0,0,6.VQBUAVAFQBUAAAEAAAAAAAAAAABUAVAFQBUAVQAAAAAAAAAAAAAAAFAFQBUA1QCUAAAAAAAAAAAAAAAAQAAABAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             events: {
                 'start': {
                     msg: [
-                        "Now there's two of them. Can you get at least one to the goal?",
+                        "This is going to take some teamwork."
                     ]
                 },
                 'lost': {
@@ -63,7 +98,7 @@ exports.start = function () {
                 }
             }
         },
-        { // concurrency 2
+        { // concurrency 3
             map: "2,1,1,5;2,0,4,2;0,0,8,1;2,4,0,3;0,7,0,1.0,0,6.VRVUBVAVQFUAVQEMAAAAAAAAAABUFVAFQBUAVQAAAAAAAAAAAAAAAFAJQAUAFQAMAAAAAAAAAAAAAAAAQAUABQAMAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             events: {
                 'won': {
