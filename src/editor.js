@@ -76,8 +76,9 @@ function onPaste(event) {
 function onCanvasClicked(context) {
     if (context.type === 'unit') {
         map.units = map.units.filter(function (unit) {
-            return !unit.pos.equals(context.unit.pos);
+            return unit !== context.unit;
         });
+        updateLevelString();
         return;
     }
 
@@ -87,6 +88,7 @@ function onCanvasClicked(context) {
         if (map.isValid(block.x, block.y, block.z)) {
             map.set(block.x, block.y, block.z, null);
         }
+        updateLevelString();
         return;
     }
 
@@ -98,7 +100,7 @@ function onCanvasClicked(context) {
     }
 
     var spotTaken = map.units.some(function (unit) {
-        return unit.x === x && unit.y === y && unit.z === z;
+        return unit.pos.equals(x, y, z);
     });
     if (spotTaken) {
         return;
@@ -113,19 +115,15 @@ function onCanvasClicked(context) {
     } else if (['fighter', 'climber', 'shadow'].indexOf(element.type) >= 0) {
         map.units.push(unitTypes.createUnit(element.type, x, y, z));
     }
-
     updateLevelString();
 }
 
 function updateLevelString() {
-    if (textarea.firstChild) {
-        textarea.removeChild(textarea.firstChild);
-    }
     var level = {
         map: '' + map,
         events: mapEvents
     };
-    textarea.appendChild(document.createTextNode(JSON.stringify(level)));
+    textarea.value = JSON.stringify(level);
 }
 
 exports.activate = function (level) {
