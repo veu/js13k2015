@@ -10,8 +10,10 @@ exports.Cube = function (x, y, z) {
     this.type = 'cube';
 
     this.render = function (canvas) {
-        canvas.drawPolygon3d('x', [0,0,0, 1,0,0, 1,0,1, 1,1,1, 0,1,1, 0,1,0], new MapContext(this, 'x'));
-        canvas.drawPolygon3d('y', [1,1,0, 0,1,0, 0,1,1, 1,1,1], new MapContext(this, 'y'));
+        if (this.z > 0) {
+            canvas.drawPolygon3d('x', [0,0,0, 1,0,0, 1,0,1, 1,1,1, 0,1,1, 0,1,0], new MapContext(this, 'x'));
+            canvas.drawPolygon3d('y', [1,1,0, 0,1,0, 0,1,1, 1,1,1], new MapContext(this, 'y'));
+        }
         canvas.drawPolygon3d('z', [0,0,0, 1,0,0, 1,1,0, 0,1,0], new MapContext(this, 'z'));
     }
 };

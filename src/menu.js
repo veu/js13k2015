@@ -24,7 +24,7 @@ exports.start = function () {
 
         for (var i = 0; i <= save.getUnlockedLevel(); i++) {
             canvas.translate3d(1, 1, i);
-            var block = new blockTypes.Cube(0, i, 0);
+            var block = new blockTypes.Cube(0, i, 1);
             block.render(canvas);
             canvas.drawText(i + 1, -42, 40, 20, 'right');
             canvas.pop();

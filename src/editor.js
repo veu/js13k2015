@@ -9,7 +9,7 @@ var MapContext = require('./context.js').MapContext;
 var Vector = require('./vector.js').Vector;
 
 var placeableElements = [
-    new blockTypes.Cube(0, 0, 0),
+    new blockTypes.Cube(0, 0, 1),
     new blockTypes.Ramp(0, 0, 0, 'x'),
     new blockTypes.Ramp(0, 0, 0, 'y'),
     new unitTypes.Fighter(0, 0, 0),
