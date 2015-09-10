@@ -145,6 +145,7 @@ exports.start = function () {
         if (!edited) {
             currentLevel++;
             if (currentLevel === levels.length) {
+                document.location.href = 'index.html';
                 return;
             }
             save.unlockLevel(currentLevel);
