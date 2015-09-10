@@ -148,6 +148,17 @@ exports.reset = function () {
     currentTranslation = {x: 0, y: 0};
 };
 
+exports.drawLine = function (color, points) {
+    ctx.beginPath();
+    ctx.moveTo(points[0], points[1]);
+    for (var i = 2; i < points.length; ++i) {
+        ctx.lineTo(points[i], points[++i]);
+    }
+    ctx.lineTo(points[i - 1], points[i]);
+    ctx.strokeStyle = color;
+    ctx.stroke();
+}
+
 exports.drawPolygon = function (color, points, data) {
     drawPolygon(ctx, color, points);
 

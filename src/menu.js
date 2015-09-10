@@ -7,9 +7,16 @@ var unitTypes = require('./units.js');
 var save = require('./save.js');
 
 exports.start = function () {
+    var lineLength = 0;
+    var fps = 30;
+
     function render() {
+        lineLength = lineLength + (250 - lineLength) / 12 + 1 | 0;
+
         canvas.reset();
         canvas.drawText('Castle Climb', 600, 100, 40);
+        canvas.drawLine('#fff', [600 - lineLength, 115, 600 + lineLength, 115]);
+        canvas.drawText('by Rebecca', 600, 140, 20);
         canvas.rotate(0.55);
         canvas.drawText('Level', 825, 257, 20);
         canvas.rotate(0);
@@ -29,7 +36,11 @@ exports.start = function () {
 
         canvas.pop();
     }
-    render();
+
+    (function loop() {
+        window.requestAnimationFrame(render);
+        setTimeout(loop, 1000 / fps);
+    })();
 
     events.on('canvas-clicked', function (data) {
         save.setCurrentLevel(data.block.y);
