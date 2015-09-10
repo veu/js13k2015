@@ -98,11 +98,25 @@ exports.start = function () {
                 }
             }
         },
+        { // fun
+            map: "1,6,0,6;1,7,0,6;1,6,1,6;1,7,1,6;1,8,0,6;1,8,1,6;1,8,2,6;1,6,2,6;1,7,2,6;1,0,6,6;1,1,6,6;1,2,6,6;1,0,7,6;1,1,7,6;1,2,7,6;1,0,8,6;1,1,8,6;1,2,8,6;2,7,6,1;2,8,7,1;2,8,6,1;2,7,8,1;2,6,7,1;2,6,8,1;2,5,7,1;2,5,6,1;2,5,5,1;2,6,5,1;2,7,5,1;2,5,8,1;2,8,5,1;2,6,6,1.7,7,2.FVBVQFUBFQAAAAAAAFABQAUQFQBUQFUBVQVUAAAAAAAAQAUAFQBUAFABVQEUERABAAAAAAAAFQAUABABQAVUFVBVQAUAAAAAAABUAFABQAUAFVBVQFUBFQAAAAAAAFABQAUAFQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            events: {
+                'start': {
+                    msg: ["The last one was too hard. Have some fun!"]
+                },
+                'won': {
+                    msg: ["Good times!"]
+                }
+            }
+        },
         { // concurrency 3
             map: "2,1,1,5;2,0,4,2;0,0,8,1;2,4,0,3;0,7,0,1.0,0,6.VRVUBVAVQFUAVQEMAAAAAAAAAABUFVAFQBUAVQAAAAAAAAAAAAAAAFAJQAUAFQAMAAAAAAAAAAAAAAAAQAUABQAMAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             events: {
+                'start': {
+                    msg: ["I don‘t even know how to win this one."]
+                },
                 'won': {
-                    msg: ["You did it! You beat the last level."]
+                    msg: ["Clever!"]
                 }
             }
         }
