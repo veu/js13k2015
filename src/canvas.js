@@ -109,7 +109,7 @@ canvas.onclick = function (event) {
     events.emit('canvas-clicked', data);
 }
 
-var resize = window.onresize = function () {
+var resize = exports.resize = window.onresize = function () {
     scale = Math.min(window.innerWidth / width, window.innerHeight / height);
     offsetX = (window.innerWidth - width * scale) / 2 | 0;
     offsetY = (window.innerHeight - height * scale) / 2 | 0;
@@ -119,6 +119,8 @@ var resize = window.onresize = function () {
     canvas.style.top = offsetY + 'px';
 
     drawBackground(scale);
+
+    events.emit('canvas-resized', {width: width * scale | 0, height: height * scale | 0});
 };
 resize();
 

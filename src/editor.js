@@ -118,6 +118,12 @@ function onCanvasClicked(context) {
     updateLevelString();
 }
 
+function onCanvasResized(data) {
+    textarea.style.width = (data.width * 6 / 7 | 0) + 'px';
+    textarea.style.height = (data.height / 4 | 0) + 'px';
+    textarea.style.right = ((window.innerWidth - data.width) / 2 | 0) + 'px';
+}
+
 function updateLevelString() {
     var level = {
         map: '' + map,
@@ -132,10 +138,12 @@ exports.activate = function (level) {
     events.on('key-pressed', onKeyPressed);
     events.on('render', render);
     events.on('canvas-clicked', onCanvasClicked);
+    events.on('canvas-resized', onCanvasResized);
     textarea.style.display = 'block';
     textarea.onpaste = onPaste;
     updateLevelString();
     active = true;
+    canvas.resize();
 };
 
 exports.deactivate = function () {
@@ -146,6 +154,7 @@ exports.deactivate = function () {
     events.off('key-pressed', onKeyPressed);
     events.off('render', render);
     events.off('canvas-clicked', onCanvasClicked);
+    events.off('canvas-resized', onCanvasResized);
     textarea.style.display = 'none';
     active = false;
 };

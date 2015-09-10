@@ -14,9 +14,8 @@ canvas {
 }
 
 textarea {
-    position: relative;
+    position: absolute;
+    top: 0;
     display: none;
-    width: 99%;
-    height: 160px;
     z-index: 1;
 }
