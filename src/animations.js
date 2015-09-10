@@ -28,15 +28,18 @@ exports.MovementAnimation = function (last, current) {
     };
 };
 
-exports.FightingAnimation = function () {
+exports.FightingAnimation = function (unit) {
     var step = 0;
     var length = 16;
 
     this.beforeRendering = function (canvas) {
-        canvas.translate(0, -Math.pow(7 - Math.abs(7 - step), 2) / 8);
+        var offset = Math.pow(7 - Math.abs(7 - step), 2) / 8;
+        canvas.translate(unit.lookingLeft ? -offset : offset, -offset);
+        canvas.rotate(unit.lookingLeft ? -step / length / 6 : step / length / 6);
     };
 
     this.afterRendering = function (canvas) {
+        canvas.rotate(0);
         canvas.pop();
         step++;
     };

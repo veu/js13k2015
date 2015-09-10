@@ -35,9 +35,13 @@ var Unit = {
             reachableEnemies.sort(function (a, b) {
                 return a.life - b.life || a.x - b.x || a.y - b.y;
             });
-            reachableEnemies.shift().damageTaken += this.damage;
+            var attackedEnemy = reachableEnemies.shift();
+            attackedEnemy.damageTaken += this.damage;
+            this.lookingLeft = this.pos.y < attackedEnemy.pos.y || this.pos.x > attackedEnemy.pos.x;
             return true;
         }
+
+
         return false;
     },
     render: function (canvas, colors) {
@@ -89,7 +93,7 @@ exports.Fighter = function (x, y, z) {
             return;
         }
         if (this.attack(map, units)) {
-            this.animation = new animations.FightingAnimation();
+            this.animation = new animations.FightingAnimation(this);
             return;
         }
         if (!map.target || this.pos.equals(map.target.pos)) {
@@ -150,7 +154,7 @@ exports.Climber = function (x, y, z) {
 
     this.move = function (map, units) {
         if (this.attack(map, units)) {
-            this.animation = new animations.FightingAnimation();
+            this.animation = new animations.FightingAnimation(this);
             return;
         }
         if (!map.target || this.pos.equals(map.target.pos)) {
@@ -200,7 +204,7 @@ exports.Shadow = function (x, y, z) {
 
     this.move = function (map, units) {
         if (this.attack(map, units)) {
-            this.animation = new animations.FightingAnimation();
+            this.animation = new animations.FightingAnimation(this);
         }
     };
 
