@@ -77,6 +77,11 @@ exports.start = function () {
                         "Sometimes it‘s best to avoid confrontation."
                     ]
                 },
+                'lost': {
+                    msg: [
+                        "Press enter to reset the level faster."
+                    ]
+                },
                 'won':{
                     msg: ["Impressive!"]
                 }
@@ -92,8 +97,7 @@ exports.start = function () {
                 },
                 'lost': {
                     msg: [
-                        "The enemies can only attack one of ours at a time; use it to your advantage.",
-                        "Press enter to reset the level faster."
+                        "The enemies can only attack one of ours at a time; use it to your advantage."
                     ]
                 }
             }
