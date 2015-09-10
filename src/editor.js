@@ -30,21 +30,14 @@ function onKeyPressed(data) {
 }
 
 function renderEditHelpers() {
-    for (var y = map.size.y; y--;) {
-        for (var x = map.size.x; x--;) {
-            canvas.translate3d(x, y, -1);
-            canvas.drawPolygon3d('#9c7f8a', [0,0,0, 1,0,0, 1,1,0, 0,1,0], new MapContext(new Vector(x, y, -1), 'z'));
-            canvas.pop();
-        }
-    }
-    for (var z = map.size.z; z--;) {
+    for (var z = map.size.z; --z;) {
         for (var x = map.size.x; x--;) {
             canvas.translate3d(x, -1, z);
             canvas.drawPolygon3d('#cec1ba', [1,1,0, 0,1,0, 0,1,1, 1,1,1], new MapContext(new Vector(x, -1, z), 'y'));
             canvas.pop();
         }
     }
-    for (var z = map.size.z; z--;) {
+    for (var z = map.size.z; --z;) {
         for (var y = map.size.y; y--;) {
             canvas.translate3d(-1, y, z);
             canvas.drawPolygon3d('#846076', [1,1,0, 1,0,0, 1,0,1, 1,1,1], new MapContext(new Vector(-1, y, z), 'x'));
@@ -85,10 +78,10 @@ function onCanvasClicked(context) {
     var block = context.block;
     var element = placeableElements[selectedPlaceableIndex];
     if (event.shiftKey) {
-        if (map.isValid(block.x, block.y, block.z)) {
+        if (block.z > 0 && map.isValid(block.x, block.y, block.z)) {
             map.set(block.x, block.y, block.z, null);
+            updateLevelString();
         }
-        updateLevelString();
         return;
     }
 

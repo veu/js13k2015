@@ -85,6 +85,7 @@ var Map = function (save) {
 
     this.render = function (canvas, units) {
         units = units || this.units;
+        canvas.drawPolygon3d('y', [0,0,0, 9,0,0, 9,9,0, 0,9,0]);
         for (var z in blocks) {
             for (var y in blocks[z]) {
                 for (var x in blocks[z][y]) {
