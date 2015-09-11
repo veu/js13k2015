@@ -51,3 +51,12 @@ exports.FightingAnimation = function (unit) {
     this.getPosition = function () {
     };
 };
+
+exports.AnimatedLine = function (maxLength) {
+    var length = 0;
+
+    this.render = function (canvas, x, y) {
+        length = length + (maxLength - length) / 12 + 1 | 0;
+        canvas.drawLine('#fff', [x - length, y, x + length, y]);
+    }
+};

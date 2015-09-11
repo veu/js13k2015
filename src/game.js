@@ -4,12 +4,14 @@ var config = require('./config.js').units;
 var events = require('./events.js');
 var canvas = require('./canvas.js');
 var unitTypes = require('./units.js');
+var animations = require('./animations.js');
 
 var map;
 var units = [];
 var tick;
 var roleReversalScheduled;
 var message;
+var underline;
 var levelState;
 
 function update() {
@@ -88,6 +90,7 @@ function render() {
             canvas.drawText(part, canvas.getWidth() / 2, 120 + offset);
             offset += 32;
         });
+        underline.render(canvas, 600, 105 + offset);
         canvas.drawText('click to continue', canvas.getWidth() / 2, 130 + offset, 18);
     }
 
@@ -145,6 +148,7 @@ exports.deactivate = function () {
 };
 
 exports.showMessage = function (msg) {
+    underline = new animations.AnimatedLine(400);
     message = msg;
 };
 

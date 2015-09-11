@@ -5,17 +5,16 @@ var events = require('./events.js');
 var blockTypes = require('./blocks.js');
 var unitTypes = require('./units.js');
 var save = require('./save.js');
+var animations = require('./animations.js');
 
 exports.start = function () {
-    var lineLength = 0;
+    var underline = new animations.AnimatedLine(250);
     var fps = 30;
 
     function render() {
-        lineLength = lineLength + (250 - lineLength) / 12 + 1 | 0;
-
         canvas.reset();
         canvas.drawText('Castle Climb', 600, 100, 40);
-        canvas.drawLine('#fff', [600 - lineLength, 115, 600 + lineLength, 115]);
+        underline.render(canvas, 600, 115);
         canvas.drawText('by Rebecca', 600, 140, 20);
         canvas.rotate(0.55);
         canvas.drawText('Level', 825, 257, 20);
