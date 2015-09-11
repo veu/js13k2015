@@ -231,9 +231,14 @@ exports.start = function () {
         }
         var key = String.fromCharCode(event.keyCode);
         events.emit('key-pressed', {key: key, code: event.keyCode});
-    }
+    };
 
-    document.onclick = function (event) {
+    document.onmousedown = function (event) {
         events.emit('clicked');
-    }
+    };
+
+    document.ontouchstart = function (event) {
+        events.emit('tapped');
+        event.preventDefault();
+    };
 };

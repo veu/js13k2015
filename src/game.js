@@ -125,6 +125,14 @@ function onClicked(key) {
 }
 
 exports.activate = function (newMap) {
+function onTapped(data) {
+    if (message) {
+        message = false;
+    } else {
+        roleReversalScheduled = true;
+    }
+}
+
     levelState = null;
     map = newMap;
     tick = 0;
@@ -134,6 +142,7 @@ exports.activate = function (newMap) {
     });
     events.on('key-pressed', onKeyPressed);
     events.on('clicked', onClicked);
+    events.on('tapped', onTapped);
     events.on('update', update);
     events.on('render', render);
 
@@ -143,6 +152,7 @@ exports.activate = function (newMap) {
 exports.deactivate = function () {
     events.off('key-pressed', onKeyPressed);
     events.off('clicked', onClicked);
+    events.off('tapped', onTapped);
     events.off('update', update);
     events.off('render', render);
 };
