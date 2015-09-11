@@ -7,6 +7,7 @@ var unitTypes = require('./units.js');
 var animations = require('./animations.js');
 
 var map;
+var mode;
 var units = [];
 var tick;
 var roleReversalScheduled;
@@ -98,7 +99,9 @@ function render() {
 }
 
 function reverseRoles() {
-    var unitMap = {climber: 'fighter', fighter: 'climber', shadow: 'shadow' };
+    var unitMap = (mode === 'weird')
+        ? {climber: 'climber', fighter: 'shadow', shadow: 'fighter' }
+        : {climber: 'fighter', fighter: 'climber', shadow: 'shadow' };
     units = units.map(function (unit) {
         var newUnit = unitTypes.createUnit(unitMap[unit.type], unit.pos.x, unit.pos.y, unit.pos.z);
         newUnit.animation = unit.animation;
@@ -124,7 +127,6 @@ function onClicked(key) {
     message = false;
 }
 
-exports.activate = function (newMap) {
 function onTapped(data) {
     if (message) {
         message = false;
@@ -133,8 +135,10 @@ function onTapped(data) {
     }
 }
 
+exports.activate = function (newMap, newMode) {
     levelState = null;
     map = newMap;
+    mode = newMode;
     tick = 0;
     roleReversalScheduled = false;
     units = map.units.map(function (unit) {

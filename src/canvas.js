@@ -119,12 +119,13 @@ var resize = exports.resize = window.onresize = function () {
     canvas.style.top = offsetY + 'px';
 
     drawBackground(scale);
+    exports.drawBackground = drawBackground.bind(null, scale);
 
     events.emit('canvas-resized', {width: width * scale | 0, height: height * scale | 0});
 };
 resize();
 
-function drawBackground(scale) {
+function drawBackground(scale, green) {
     var canvas = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
     canvas.width = innerWidth;
@@ -134,7 +135,7 @@ function drawBackground(scale) {
         innerWidth / 2, innerHeight / 2 + 100 * scale, 200 * scale
     );
     gradient.addColorStop(0, '#000');
-    gradient.addColorStop(1, '#3a0033');
+    gradient.addColorStop(1, green ? '#003a33' : '#3a0033');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, innerWidth, innerHeight);
     document.body.style.background = 'url(' + canvas.toDataURL("image/png") + ')';

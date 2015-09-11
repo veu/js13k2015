@@ -99,6 +99,9 @@ exports.start = function () {
                     msg: [
                         "The enemies can only attack one of ours at a time; use it to your advantage."
                     ]
+                },
+                'won': {
+                    msg: ["High five!"]
                 }
             }
         },
@@ -123,6 +126,18 @@ exports.start = function () {
                     msg: ["Clever!"]
                 }
             }
+        },
+        {
+            map: "0,4,7,1;2,5,1,5;2,5,2,4;2,5,3,3;2,5,4,2;2,3,1,5;2,3,2,4;2,3,3,3;2,3,4,2.4,0,6.AAQAEABAAAABQAUAHQAAAAAAAAAAEABAAAABQAUAAAAAAAAAAAAAAABAAAABQAUAAAAAAAAAAAAAAAAAAEABQAUAAAAAAAAAAAAAAAAAAAAAQAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            mode: 'weird',
+            events: {
+                'start': {
+                    msg: ["What‘s going on? Something‘s not right..."]
+                },
+                'won': {
+                    msg: ["o_O"]
+                }
+            }
         }
     ];
 
@@ -130,6 +145,7 @@ exports.start = function () {
     var currentLevel = save.getCurrentLevel();
     var activeEvents;
     var map;
+    var mode;
     var edited = false;
 
     events.on('unit-at', function (unit) {
@@ -218,11 +234,13 @@ exports.start = function () {
         }
 
         map = Map.load(levels[currentLevel].map);
-        game.activate(map);
+        mode = levels[currentLevel].mode || 'default';
+        canvas.drawBackground(mode === 'weird');
+        game.activate(map, mode);
     }
 
     function restartLevel() {
-        game.activate(map);
+        game.activate(map, mode);
     }
 
     document.onkeydown = function (event) {
