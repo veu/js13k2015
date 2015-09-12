@@ -34,7 +34,7 @@ gulp.task('build-production', function() {
 });
 
 gulp.task('dist', function() {
-    return gulp.src('build/*')
+    return gulp.src(['build/*', 'README.md'])
     .pipe(zip('game.zip'))
     .pipe(gulp.dest('dist'));
 });
