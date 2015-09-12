@@ -26,7 +26,9 @@ var inputIndex = 0;
 
 function drawPolygon(ctx, color, points) {
     ctx.translate(currentTranslation.x, currentTranslation.y);
-    ctx.rotate(currentRotation);
+    if (currentRotation) {
+        ctx.rotate(currentRotation);
+    }
     ctx.beginPath();
     ctx.moveTo(points[0], points[1]);
     for (var i = 2; i < points.length; ++i) {
@@ -35,7 +37,9 @@ function drawPolygon(ctx, color, points) {
     ctx.lineTo(points[i - 1], points[i]);
     ctx.fillStyle = color;
     ctx.fill();
-    ctx.rotate(-currentRotation);
+    if (currentRotation) {
+        ctx.rotate(-currentRotation);
+    }
     ctx.translate(-currentTranslation.x, -currentTranslation.y);
 }
 
@@ -105,7 +109,7 @@ canvas.onclick = function (event) {
     events.emit('canvas-clicked', data);
 }
 
-var resize = window.onresize = function () {
+var resize = exports.resize = window.onresize = function () {
     scale = Math.min(window.innerWidth / width, window.innerHeight / height);
     offsetX = (window.innerWidth - width * scale) / 2 | 0;
     offsetY = (window.innerHeight - height * scale) / 2 | 0;
@@ -113,25 +117,47 @@ var resize = window.onresize = function () {
     canvas.style.height = (height * scale | 0) + 'px';
     canvas.style.left = offsetX + 'px';
     canvas.style.top = offsetY + 'px';
+
+    drawBackground(scale);
+
+    events.emit('canvas-resized', {width: width * scale | 0, height: height * scale | 0});
 };
 resize();
 
-exports.drawBackground = function () {
-    canvas.width = inputCanvas.width = width;
-    canvas.height = inputCanvas.height = height;
-
+function drawBackground(scale) {
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
     var gradient = ctx.createRadialGradient(
-        width / 2, height / 2 + 100, 1000,
-        width / 2, height / 2 + 100, 200
+        innerWidth/ 2, innerHeight / 2 + 100 * scale, 1000 * scale,
+        innerWidth / 2, innerHeight / 2 + 100 * scale, 200 * scale
     );
     gradient.addColorStop(0, '#000');
     gradient.addColorStop(1, '#3a0033');
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, innerWidth, innerHeight);
+    document.body.style.background = 'url(' + canvas.toDataURL("image/png") + ')';
+}
+
+exports.reset = function () {
+    canvas.width = inputCanvas.width = width;
+    canvas.height = inputCanvas.height = height;
     inputData = {};
     inputIndex = 0;
     currentTranslation = {x: 0, y: 0};
 };
+
+exports.drawLine = function (color, points) {
+    ctx.beginPath();
+    ctx.moveTo(points[0], points[1]);
+    for (var i = 2; i < points.length; ++i) {
+        ctx.lineTo(points[i], points[++i]);
+    }
+    ctx.lineTo(points[i - 1], points[i]);
+    ctx.strokeStyle = color;
+    ctx.stroke();
+}
 
 exports.drawPolygon = function (color, points, data) {
     drawPolygon(ctx, color, points);
@@ -158,11 +184,17 @@ exports.drawPolygon3d = function (color, points, data) {
     this.drawPolygon(color, points2d, data);
 };
 
-exports.drawText = function (text, x, y, size) {
+exports.drawText = function (text, x, y, size, align) {
     ctx.font = (size || 24) + 'px Trebuchet MS, Helvetica, sans-serif';
     ctx.fillStyle = '#ccc';
-    ctx.textAlign = 'center';
+    ctx.textAlign = align || 'center';
+    if (currentRotation) {
+        ctx.rotate(currentRotation);
+    }
     ctx.fillText(text, currentTranslation.x + x, currentTranslation.y + y);
+    if (currentRotation) {
+        ctx.rotate(-currentRotation);
+    }
 };
 
 exports.translate = function (x, y) {

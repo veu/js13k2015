@@ -4,12 +4,14 @@ var config = require('./config.js').units;
 var events = require('./events.js');
 var canvas = require('./canvas.js');
 var unitTypes = require('./units.js');
+var animations = require('./animations.js');
 
 var map;
 var units = [];
 var tick;
 var roleReversalScheduled;
 var message;
+var underline;
 var levelState;
 
 function update() {
@@ -66,8 +68,10 @@ function update() {
 function updateFallingUnits() {
     units.forEach(function (unit) {
         if (unit.falling) {
-            unit.life = Math.max(unit.life - config.fighter.fallDamage, 0);
+            unit.fallDamageTaken += config.fighter.fallDamage;
             if (map.get(unit.pos.sub(0, 0, 1))) {
+                unit.life = Math.max(0, unit.life - unit.fallDamageTaken);
+                unit.fallDamageTaken = 0;
                 unit.falling = false;
             }
         }
@@ -75,7 +79,7 @@ function updateFallingUnits() {
 }
 
 function render() {
-    canvas.drawBackground();
+    canvas.reset();
     canvas.translate(canvas.getWidth() / 2, canvas.getHeight() - 360);
     map.render(canvas, units);
     canvas.pop();
@@ -86,6 +90,7 @@ function render() {
             canvas.drawText(part, canvas.getWidth() / 2, 120 + offset);
             offset += 32;
         });
+        underline.render(canvas, 600, 105 + offset);
         canvas.drawText('click to continue', canvas.getWidth() / 2, 130 + offset, 18);
     }
 
@@ -97,7 +102,7 @@ function reverseRoles() {
     units = units.map(function (unit) {
         var newUnit = unitTypes.createUnit(unitMap[unit.type], unit.pos.x, unit.pos.y, unit.pos.z);
         newUnit.animation = unit.animation;
-        newUnit.life = unit.life;
+        newUnit.life = unit.life / unit.maxLife * newUnit.maxLife | 0;
         newUnit.lookingLeft = unit.lookingLeft;
         return newUnit;
     });
@@ -109,8 +114,8 @@ function isUnitWithLowestLifeAtPosition(unit) {
     });
 }
 
-function onKeyPressed(key) {
-    if (!message && key === ' ') {
+function onKeyPressed(data) {
+    if (!message && data.key === ' ') {
         roleReversalScheduled = true;
     }
 }
@@ -120,6 +125,14 @@ function onClicked(key) {
 }
 
 exports.activate = function (newMap) {
+function onTapped(data) {
+    if (message) {
+        message = false;
+    } else {
+        roleReversalScheduled = true;
+    }
+}
+
     levelState = null;
     map = newMap;
     tick = 0;
@@ -129,6 +142,7 @@ exports.activate = function (newMap) {
     });
     events.on('key-pressed', onKeyPressed);
     events.on('clicked', onClicked);
+    events.on('tapped', onTapped);
     events.on('update', update);
     events.on('render', render);
 
@@ -138,11 +152,13 @@ exports.activate = function (newMap) {
 exports.deactivate = function () {
     events.off('key-pressed', onKeyPressed);
     events.off('clicked', onClicked);
+    events.off('tapped', onTapped);
     events.off('update', update);
     events.off('render', render);
 };
 
 exports.showMessage = function (msg) {
+    underline = new animations.AnimatedLine(400);
     message = msg;
 };
 

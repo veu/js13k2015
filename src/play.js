@@ -1,7 +1,10 @@
 'use strict';
 
 var events = require('./events.js');
+var editor = require('./editor.js');
 var game = require('./game.js');
+var save = require('./save.js');
+var canvas = require('./canvas.js');
 
 exports.start = function () {
 
@@ -41,37 +44,93 @@ exports.start = function () {
                         "Looks like someone‘s hell-bent to fight but too weak in his current form.",
                         "Next time, press space to switch back before fighting."
                     ]
+                },
+                'won': {
+                    msg: [
+                        "Right on! Remember: red is for fighting and green for climbing."
+                    ]
                 }
             }
         },
-        { // concurrency
-            map: "2,1,1,5;2,4,4,2;0,8,3,1;0,3,6,1.0,0,6.VQBUAVAFQBUAAAEAAAAAAAAAAABUAVAFQBUAVQAAAAAAAAAAAAAAAFAFQBUA1QCUAAAAAAAAAAAAAAAAQAAABAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        { // concurrency 1
+
+            map: "2,4,2,2;2,2,5,2;0,2,7,1;2,2,2,3;1,8,3,1.0,0,4.VQVUFVBVQlUBVQVUFQADAAAAAABUAVAFQBUAVQAAAAAAAAAAAAAAAFAAQAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             events: {
                 'start': {
                     msg: [
-                        "Now there's two of them. Can you get at least one to the goal?",
+                        "These two have opposite colors. Pressing space reverses their roles.",
+                        "Can you get one of them to the goal?"
+                    ]
+                },
+                'won': {
+                    msg: [
+                        "Amazing!"
+                    ]
+                }
+            }
+        },
+        { // avoiding
+            map: "2,3,0,3;2,3,3,3;2,3,7,3;2,1,8,3;2,0,2,4;2,6,8,2;2,6,5,2;2,6,2,2;0,8,7,1.0,0,4.VQlUVVBVQVUFVRVUVVBVQVUFVRVUAVAFQBUAVQBUAVAFQBUAVQCUAFAAQAEABQAUAFAAQAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            events: {
+                'start': {
+                    msg: [
+                        "Sometimes it‘s best to avoid confrontation."
                     ]
                 },
                 'lost': {
                     msg: [
-                        "The enemies can only attack one of ours at a time. Use that to your advantage."
+                        "Press enter to reset the level faster."
                     ]
+                },
+                'won':{
+                    msg: ["Impressive!"]
                 }
             }
         },
         { // concurrency 2
+            map: "2,1,1,5;2,4,4,2;0,8,3,1;0,3,6,1.0,0,6.VQBUAVAFQBUAAAEAAAAAAAAAAABUAVAFQBUAVQAAAAAAAAAAAAAAAFAFQBUA1QCUAAAAAAAAAAAAAAAAQAAABAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            events: {
+                'start': {
+                    msg: [
+                        "This is going to take some teamwork."
+                    ]
+                },
+                'lost': {
+                    msg: [
+                        "The enemies can only attack one of ours at a time; use it to your advantage."
+                    ]
+                }
+            }
+        },
+        { // fun
+            map: "1,6,0,6;1,7,0,6;1,6,1,6;1,7,1,6;1,8,0,6;1,8,1,6;1,8,2,6;1,6,2,6;1,7,2,6;1,0,6,6;1,1,6,6;1,2,6,6;1,0,7,6;1,1,7,6;1,2,7,6;1,0,8,6;1,1,8,6;1,2,8,6;2,7,6,1;2,8,7,1;2,8,6,1;2,7,8,1;2,6,7,1;2,6,8,1;2,5,7,1;2,5,6,1;2,5,5,1;2,6,5,1;2,7,5,1;2,5,8,1;2,8,5,1;2,6,6,1.7,7,2.FVBVQFUBFQAAAAAAAFABQAUQFQBUQFUBVQVUAAAAAAAAQAUAFQBUAFABVQEUERABAAAAAAAAFQAUABABQAVUFVBVQAUAAAAAAABUAFABQAUAFVBVQFUBFQAAAAAAAFABQAUAFQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            events: {
+                'start': {
+                    msg: ["The last one was too hard. Have some fun!"]
+                },
+                'won': {
+                    msg: ["Good times!"]
+                }
+            }
+        },
+        { // concurrency 3
             map: "2,1,1,5;2,0,4,2;0,0,8,1;2,4,0,3;0,7,0,1.0,0,6.VRVUBVAVQFUAVQEMAAAAAAAAAABUFVAFQBUAVQAAAAAAAAAAAAAAAFAJQAUAFQAMAAAAAAAAAAAAAAAAQAUABQAMAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             events: {
+                'start': {
+                    msg: ["I don‘t even know how to win this one."]
+                },
                 'won': {
-                    msg: ["You did it! You beat the last level."]
+                    msg: ["Clever!"]
                 }
             }
         }
     ];
 
     var Map = require('./map.js').Map;
-    var currentLevel = 0;
+    var currentLevel = save.getCurrentLevel();
     var activeEvents;
+    var map;
+    var edited = false;
 
     events.on('unit-at', function (unit) {
         handleEvent('at:' + unit.pos);
@@ -87,10 +146,13 @@ exports.start = function () {
             return;
         }
         game.deactivate();
-        currentLevel++;
-        if (currentLevel === levels.length) {
-            alert('fin');
-            return;
+        if (!edited) {
+            currentLevel++;
+            if (currentLevel === levels.length) {
+                document.location.href = 'index.html';
+                return;
+            }
+            save.unlockLevel(currentLevel);
         }
         startLevel();
     });
@@ -101,6 +163,26 @@ exports.start = function () {
         game.deactivate();
         restartLevel();
     });
+    events.on('key-pressed', function (data) {
+        if (data.key === 'E') {
+            edited = true;
+            if (editor.isActive()) {
+                editor.deactivate();
+                levels[currentLevel] = editor.level;
+                startLevel();
+            } else {
+                game.deactivate();
+                editor.activate(levels[currentLevel]);
+            }
+        }
+        if (data.code === 27) {
+            document.location.href = 'index.html';
+        }
+        if (data.code === 13) {
+            game.deactivate();
+            restartLevel();
+        }
+    });
     startLevel();
 
     var fps = 30;
@@ -109,6 +191,7 @@ exports.start = function () {
         events.emit('update');
         window.requestAnimationFrame(function render() {
             events.emit('render');
+            canvas.drawText('Level ' + (+currentLevel + 1), 20, 880, 20, 'left');
         });
         setTimeout(loop, 1000 / fps);
     })();
@@ -134,19 +217,28 @@ exports.start = function () {
             activeEvents[e] = levels[currentLevel].events[e];
         }
 
-        game.activate(Map.load(levels[currentLevel].map));
+        map = Map.load(levels[currentLevel].map);
+        game.activate(map);
     }
 
     function restartLevel() {
-        game.activate(Map.load(levels[currentLevel].map));
+        game.activate(map);
     }
 
     document.onkeydown = function (event) {
+        if (event.target !== document.body) {
+            return;
+        }
         var key = String.fromCharCode(event.keyCode);
-        events.emit('key-pressed', key);
-    }
+        events.emit('key-pressed', {key: key, code: event.keyCode});
+    };
 
-    document.onclick = function (event) {
+    document.onmousedown = function (event) {
         events.emit('clicked');
-    }
+    };
+
+    document.ontouchstart = function (event) {
+        events.emit('tapped');
+        event.preventDefault();
+    };
 };

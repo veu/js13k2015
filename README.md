@@ -1,6 +1,6 @@
-# js13k2015
+# Castle Climb
 
-Entry for js13kGames 2015
+Entry for [js13kGames 2015](http://2015.js13kgames.com/).
 
 ## Installation
 
@@ -14,6 +14,7 @@ Toggle modes with `E`.
 ### Play mode
 
 * Press `space` to swap roles
+* Press `enter` to restart level
 
 ### Edit mode
 
@@ -22,5 +23,5 @@ Toggle modes with `E`.
 * Remove blocks by clicking while holding `shift`
 * Remove units by clicking
 * Move target by placing it somewhere else
-* Save level with `S` and copy last line from console
-* Load level by pasting the line back into console
+* Save level by copying the level string from the textarea
+* Load level by pasting a level string into the textarea

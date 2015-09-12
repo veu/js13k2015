@@ -35,9 +35,13 @@ var Unit = {
             reachableEnemies.sort(function (a, b) {
                 return a.life - b.life || a.x - b.x || a.y - b.y;
             });
-            reachableEnemies.shift().damageTaken += this.damage;
+            var attackedEnemy = reachableEnemies.shift();
+            attackedEnemy.damageTaken += this.damage;
+            this.lookingLeft = this.pos.y < attackedEnemy.pos.y || this.pos.x > attackedEnemy.pos.x;
             return true;
         }
+
+
         return false;
     },
     render: function (canvas, colors) {
@@ -73,6 +77,7 @@ exports.Fighter = function (x, y, z) {
     this.life = this.maxLife = config.fighter.life;
     this.damage = config.fighter.damage;
     this.damageTaken = 0;
+    this.fallDamageTaken = 0;
     this.falling = false;
 
     this.attack = Unit.attack;
@@ -80,15 +85,15 @@ exports.Fighter = function (x, y, z) {
     this.move = function (map, units) {
         var groundBlock = map.get(this.pos.sub(0, 0, 1));
         if (!groundBlock) {
-            this.animation = new animations.FallingAnimation(
-                this.pos, map.getUnitRenderPosition(this.pos.sub(0, 0, 1))
+            this.animation = new animations.MovementAnimation(
+                map.getUnitRenderPosition(this.pos), map.getUnitRenderPosition(this.pos.sub(0, 0, 1))
             );
             this.pos = this.pos.sub(0, 0, 1);
             this.falling = true;
             return;
         }
         if (this.attack(map, units)) {
-            this.animation = new animations.FightingAnimation();
+            this.animation = new animations.FightingAnimation(this);
             return;
         }
         if (!map.target || this.pos.equals(map.target.pos)) {
@@ -124,12 +129,18 @@ exports.Fighter = function (x, y, z) {
     };
 
     this.render = function (canvas) {
+        if (this.falling) {
+            canvas.rotate(0.1);
+        }
         Unit.render.call(this, canvas, ['#ee3796', '#db0087', '#000']);
+        if (this.falling) {
+            canvas.rotate(0);
+        }
     };
 
-    this.getRenderPosition = function () {
-        return this.animation && this.animation.getPosition() || this.pos;
-    }
+    this.getRenderPosition = function (map) {
+        return this.animation && this.animation.getPosition() || map.getUnitRenderPosition(this.pos);
+    };
 };
 
 exports.Climber = function (x, y, z) {
@@ -143,7 +154,7 @@ exports.Climber = function (x, y, z) {
 
     this.move = function (map, units) {
         if (this.attack(map, units)) {
-            this.animation = new animations.FightingAnimation();
+            this.animation = new animations.FightingAnimation(this);
             return;
         }
         if (!map.target || this.pos.equals(map.target.pos)) {
@@ -177,9 +188,9 @@ exports.Climber = function (x, y, z) {
         Unit.render.call(this, canvas, ['#24ff78', '#11c869', '#000']);
     };
 
-    this.getRenderPosition = function () {
-        return this.animation && this.animation.getPosition() || this.pos;
-    }
+    this.getRenderPosition = function (map) {
+        return this.animation && this.animation.getPosition() || map.getUnitRenderPosition(this.pos);
+    };
 };
 
 exports.Shadow = function (x, y, z) {
@@ -193,7 +204,7 @@ exports.Shadow = function (x, y, z) {
 
     this.move = function (map, units) {
         if (this.attack(map, units)) {
-            this.animation = new animations.FightingAnimation();
+            this.animation = new animations.FightingAnimation(this);
         }
     };
 
@@ -201,7 +212,7 @@ exports.Shadow = function (x, y, z) {
         Unit.render.call(this, canvas, ['#3a0033', '#3a0033', '#850075']);
     };
 
-    this.getRenderPosition = function () {
+    this.getRenderPosition = function (map) {
         return this.pos;
     }
 };

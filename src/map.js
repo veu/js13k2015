@@ -60,6 +60,14 @@ var Map = function (save) {
         return blocks[z] && blocks[z][y] && blocks[z][y][x];
     };
 
+    this.getTopBlockAt = function (x, y) {
+        for (var z = size.z; z--;) {
+            if (blocks[z][y][x]) {
+                return blocks[z][y][x];
+            }
+        }
+    };
+
     var isValid = this.isValid = function (x, y, z) {
         if (y === undefined) {
             return isValid(x.x, x.y, x.z);
@@ -77,6 +85,7 @@ var Map = function (save) {
 
     this.render = function (canvas, units) {
         units = units || this.units;
+        canvas.drawPolygon3d('y', [0,0,0, 9,0,0, 9,9,0, 0,9,0]);
         for (var z in blocks) {
             for (var y in blocks[z]) {
                 for (var x in blocks[z][y]) {
@@ -86,7 +95,7 @@ var Map = function (save) {
                         canvas.pop();
                     }
                     units.forEach(function (unit) {
-                        var pos = this.getUnitRenderPosition(unit.getRenderPosition());
+                        var pos = unit.getRenderPosition(this);
                         if ((pos.x + 0.4 | 0) === +x && (pos.y + 0.4 | 0) === +y && (pos.z + 0.4 | 0) === +z) {
                             canvas.translate3d(pos);
                             unit.render(canvas);
