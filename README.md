@@ -1,22 +1,23 @@
 # Castle Climb
 
-Entry for [js13kGames 2015](http://2015.js13kgames.com/).
+Entry for [js13kGames 2015](http://2015.js13kgames.com/) by Rebecca ([@veubeke](https://twitter.com/veubeke)).
+A game about tiny colorful block things, their passion to climb and brawl.
+
+https://github.com/veu/js13k2015
 
 ## Installation
 
 Run `npm install` and `gulp build`.
-If all went well `build/index.html` will be the main game and `build/edit.html` a map editor.
+If all went well `build/index.html` will show the menu.
 
 ## Controls
 
-Toggle modes with `E`.
-
-### Play mode
-
 * Press `space` to swap roles
-* Press `enter` to restart level
+* Press `enter` to restart a level
+* Press `E` to toggle level editor
+  Note: this means you can't advance to the next level.
 
-### Edit mode
+### Level Editor
 
 * Place elements by clicking
 * Switch element type to place with `N`

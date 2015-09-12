@@ -20,6 +20,7 @@ var placeableElements = [
 var selectedPlaceableIndex = 0;
 var map;
 var mapEvents;
+var mapMode;
 var active = false;
 var textarea = document.querySelector('textarea');
 
@@ -63,6 +64,7 @@ function onPaste(event) {
         var level = JSON.parse(event.clipboardData.getData('text/plain'));
         map = Map.load(level.map);
         mapEvents = level.events;
+        mapMode = level.mode;
     }
 }
 
@@ -120,7 +122,8 @@ function onCanvasResized(data) {
 function updateLevelString() {
     var level = {
         map: '' + map,
-        events: mapEvents
+        events: mapEvents,
+        mode: mapMode
     };
     textarea.value = JSON.stringify(level);
 }
@@ -128,6 +131,7 @@ function updateLevelString() {
 exports.activate = function (level) {
     map = Map.load(level.map);
     mapEvents = level.events;
+    mapMode = level.mode;
     events.on('key-pressed', onKeyPressed);
     events.on('render', render);
     events.on('canvas-clicked', onCanvasClicked);
@@ -142,7 +146,8 @@ exports.activate = function (level) {
 exports.deactivate = function () {
     exports.level = {
         map: '' + map,
-        events: mapEvents
+        events: mapEvents,
+        mode: mapMode
     };
     events.off('key-pressed', onKeyPressed);
     events.off('render', render);
