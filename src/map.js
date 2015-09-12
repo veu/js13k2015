@@ -93,23 +93,22 @@ var Map = function (save) {
                         canvas.translate3d(+x, +y, +z);
                         blocks[z][y][x].render(canvas);
                         canvas.pop();
+                    } else if (this.target && this.target.pos.equals(+x, +y, +z)) {
+                        canvas.translate3d(+x, +y, +z);
+                        this.target.render(canvas);
+                        canvas.pop();
+                    } else {
+                        units.forEach(function (unit) {
+                            var pos = unit.getRenderPosition(this);
+                            if ((pos.x + 0.4 | 0) === +x && (pos.y + 0.4 | 0) === +y && (pos.z + 0.4 | 0) === +z) {
+                                canvas.translate3d(pos);
+                                unit.render(canvas);
+                                canvas.pop();
+                            }
+                        }, this);
                     }
-                    units.forEach(function (unit) {
-                        var pos = unit.getRenderPosition(this);
-                        if ((pos.x + 0.4 | 0) === +x && (pos.y + 0.4 | 0) === +y && (pos.z + 0.4 | 0) === +z) {
-                            canvas.translate3d(pos);
-                            unit.render(canvas);
-                            canvas.pop();
-                        }
-                    }, this);
                 }
             }
-        }
-
-        if (this.target) {
-            canvas.translate3d(this.target.pos);
-            this.target.render(canvas);
-            canvas.pop();
         }
     };
 
