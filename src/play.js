@@ -21,7 +21,7 @@ exports.start = function () {
                 'at:4,2,2': {
                     msg: [
                         "...apart from the fact that he can’t climb walls in his current form.",
-                        "Mind pressing space to help him out?"
+                        "Mind pressing space or tapping to help him out?"
                     ]
                 },
                 'won': {
@@ -42,7 +42,7 @@ exports.start = function () {
                 'lost': {
                     msg: [
                         "Looks like someone‘s hell-bent to fight but too weak in his current form.",
-                        "Next time, press space to switch back before fighting."
+                        "Next time, press space or tap to switch back before fighting."
                     ]
                 },
                 'won': {
@@ -79,7 +79,7 @@ exports.start = function () {
                 },
                 'lost': {
                     msg: [
-                        "Press enter to reset the level faster."
+                        "Press enter or swipe to reset the level faster."
                     ]
                 },
                 'won':{
@@ -223,6 +223,10 @@ exports.start = function () {
             restartLevel();
         }
     });
+    events.on('swiped', function () {
+        game.deactivate();
+        restartLevel();
+    });
     startLevel();
 
     var fps = 30;
@@ -279,8 +283,24 @@ exports.start = function () {
         events.emit('clicked');
     };
 
+    var touchstart;
     document.ontouchstart = function (event) {
+        touchstart = {x: event.changedTouches.item(0).pageX, y: event.changedTouches.item(0).pageY};
         events.emit('tapped');
         event.preventDefault();
+    };
+
+    document.ontouchend = function (event) {
+        event.preventDefault();
+        if (touchstart) {
+            var touch = event.changedTouches.item(0)
+            var distance = Math.sqrt(Math.pow(touchstart.x - touch.pageX, 2) + Math.pow(touchstart.y - touch.pageY, 2));
+            touchstart = null;
+            if (distance > Math.min(innerWidth, innerHeight) / 6) {
+                events.emit('swiped');
+                return;
+            }
+        }
+        events.emit('tapped');
     };
 };
