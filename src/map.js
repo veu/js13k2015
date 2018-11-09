@@ -129,7 +129,7 @@ var Map = function (save) {
                 directions[neighbor] = current.pos;
                 todo.push({pos: neighbor, distance: distance});
             }, this);
-            todo.sort(function (a, b) { return b.distance - a.distance; });
+            todo.sort(function (a, b) { return b.distance - a.distance || a.pos.x - b.pos.x; });
         }
 
         return directions;
